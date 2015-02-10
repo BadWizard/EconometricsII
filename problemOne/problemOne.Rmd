@@ -49,9 +49,57 @@ spread  10. Compare this with the LPM estimate from part (iii).
 Add the variables favhome, fav25, and und25 to the probit model and test joint significance of these variables using the likelihood ratio test. (How many df are in the chi-square distribution?) Interpret this result, focusing on the question of whether the spread incorporates all observable information prior to a game.
 
 
+## Problem C17.2
+
+Use the data in LOANAPP.RAW for this exercise
+
+# Subsection (i)
+Estimate a probit model of approve on white. Find the estimated probability of
+loan approval for both whites and nonwhites. How do these compare with the
+linear probability estimates?
+
+# Subsection (ii)
+Now, add the variables hrat, obrat, loanprc, unem, male, married, dep, sch,
+cosign, chist, pubrec, mortlat1, mortlat2, and vr to the probit model. Is there
+statistically significant evidence of discrimination against nonwhites?
+
+# Subsction (iii)
+Estimate the model from part (ii) by logit. Compare the coefficient on white to the
+probit estimate.
 
 
+# Subsection (iv)
+Use equation (17.17) to estimate the sizes of the discrimination effects for probit and logit.
 
+
+## Problem C17.3
+Use the data in FRINGE.RAW for this exercise
+
+# Subsection (i)
+For what percentage of the workers in the sample is pension equal to zero? What
+is the range of pension for workers with nonzero pension benefits? Why is a Tobit
+model appropriate for modeling pension?
+
+
+# Subsection (ii)
+Estimate a Tobit model explaining pension in terms of exper, age, tenure, educ,
+depends, married, white, and male. Do whites and males have statistically significant higher expected pension benefits?
+
+
+# Subsection (iii)
+Use the results from part (ii) to estimate the difference in expected pension
+benefits for a white male and a nonwhite female, both of whom are 35 years old,
+are single with no dependents, have 16 years of education, and have 10 years of
+experience.
+
+
+# Subsection (iv)
+Add union to the Tobit model and comment on its significance.
+
+
+# Subsection (v)
+Apply the Tobit model from part (iv) but with peratio, the pension-earnings ratio,
+as the dependent variable. (Notice that this is a fraction between zero and one, but,though it often takes on the value zero, it never gets close to being unity. Thus, a Tobit model is fine as an approximation.) Does gender or race have an effect on the pension-earnings ratio?
 
 
 
