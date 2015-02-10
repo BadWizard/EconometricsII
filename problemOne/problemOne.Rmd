@@ -1,0 +1,21 @@
+---
+title: "problemOne"
+author: "Daniel Emaasit"
+date: "February 10, 2015"
+output: word_document
+---
+
+## Problem C17.1
+Use the data in PNTSPRD.RAW for this exercise:
+
+```{r}
+summary(cars)
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+plot(cars)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
