@@ -8,14 +8,58 @@ output: word_document
 ## Problem C17.1
 Use the data in PNTSPRD.RAW for this exercise:
 
+# Section (i)
+The variable favwin is a binary variable if the team favored by the Las Vegas
+point spread wins. A linear probability model to estimate the probability that the favored team wins is:
+P(favwin=1|spread)=beta0 + beta1(spread)
+
+Explain why, if the spread incorporates all relevant information, we expect beta0=0.5
+
+# subsection (ii)
+
+Estimate the model from part (i) by OLS. Test H0:0.5 against a two-sided
+alternative. Use both the usual and heteroskedasticity-robust standard errors.
+
 ```{r}
-summary(cars)
+## install packages to read dta files
+install.packages("devtools")
+library("devtools")
+devtools::install_github("hadley/haven")
+library(haven)
+
+## reada the data file into R
+data1<-read_dta("PNTSPRD.dta")
+head(data1)
 ```
 
-You can also embed plots, for example:
+# Subsection (iii)
+Is spread statistically significant? What is the estimated probability that the
+favored team wins when spread=10?
 
-```{r, echo=FALSE}
-plot(cars)
-```
+# Subsection (iv)
+Now, estimate a probit model for P( favwin  1spread ). Interpret and test the null hypothesis that the intercept is zero. [Hint: Remember that theta= 0.5.]
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+# Subsection (v)
+Use the probit model to estimate the probability that the favored team wins when
+spread  10. Compare this with the LPM estimate from part (iii).
+
+
+# Subsection (vi)
+Add the variables favhome, fav25, and und25 to the probit model and test joint significance of these variables using the likelihood ratio test. (How many df are in the chi-square distribution?) Interpret this result, focusing on the question of whether the spread incorporates all observable information prior to a game.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
