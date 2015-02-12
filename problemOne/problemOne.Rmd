@@ -160,12 +160,42 @@ data2$approve<-as.factor(data2$approve)
 glm3<-glm(approve~white, data2, family=binomial(link="probit"))
 stargazer(glm3, type="text")
 
+## find the estimated probability for whites
+newdata3<-data.frame(white=1)
+newdata3$white<-as.factor(newdata3$white)
+predict(glm3, type="response", newdata3)
+
+# find the estimated probability for non-whites
+newdata4<-data.frame(white=0)
+newdata4$white<-as.factor(newdata4$white)
+predict(glm3, type="response", newdata4)
 ```
+
+The predicted probability for whites and non-whites is 0.9083879 and 0.7077922 respectively.
+
 
 # Subsection (ii)
 Now, add the variables hrat, obrat, loanprc, unem, male, married, dep, sch,
 cosign, chist, pubrec, mortlat1, mortlat2, and vr to the probit model. Is there
 statistically significant evidence of discrimination against nonwhites?
+
+```{r}
+## convert some of variables from characters to factors
+data2$male<-as.factor(data2$male)
+data2$male<-as.factor(data2$male)
+data2$male<-as.factor(data2$male)
+data2$male<-as.factor(data2$male)
+data2$male<-as.factor(data2$male)
+data2$male<-as.factor(data2$male)
+data2$male<-as.factor(data2$male)
+
+## estimate the new probit model
+glm4<-glm(approve~white+hrat+obrat+loanprc+unem+male+married+dep+sch+cosign+chist+pubrec+mortlat2+vr, data2, family=binomial(link="probit"))
+stargazer(glm4, type="text")
+
+```
+
+
 
 # Subsction (iii)
 Estimate the model from part (ii) by logit. Compare the coefficient on white to the
