@@ -33,19 +33,71 @@ library(haven)
 data1<-read_dta("PNTSPRD.dta")
 head(data1)
 
-## estimate the model from part(i) by OLS
+## estimate the model from part(i) by OLS using usual standard erros
 lm1<-lm(favwin~spread, data=data1)
-summary(lm1)
+install.packages("stargazer")
+library(stargazer)
+coeftest(lm1)
+
+##testing the hypothesis that H0=0.5
+calculated.t.value1=(0.5769492-0.5)/0.0282345
+calculated.t.value1
+
+## the rule
+Reject the null hypothesis if |calculated t value|>|critical t value|,
+
+##decision
+since the |calculated.t.value1|>1.96, we reject the null hypothesis
+
+##inference
+beta0 is not equal to 0.5
+
 ```
+
+
+
+```{r}
+##estimate the model from part(i) by OLS using heteroskedasticity-robust standard errors
+install.packages("AER")
+library(AER)
+coeftest(lm1, vcov = vcovHC)
+
+##testing the hypothesis that H0=0.5
+calculated.t.value2=(0.5769492-0.5)/0.0317187
+calculated.t.value2
+
+## the rule
+Reject the null hypothesis if |calculated t value|>|critical t value|,
+
+##decision
+since the |calculated.t.value2|>1.96, we reject the null hypothesis
+
+##inference
+beta0 is not equal to 0.5
+```
+
+
 
 # Subsection (iii)
 Is spread statistically significant? What is the estimated probability that the
 favored team wins when spread=10?
 
-   
+Yes, spread is statistically significant.
+
+```{r}
+## estimatedProbaility
+0.5769492+(0.0193655*10)
+```
+
+The estimated probability is 0.7706042
 
 # Subsection (iv)
 Now, estimate a probit model for P( favwin  1spread ). Interpret and test the null hypothesis that the intercept is zero. [Hint: Remember that theta= 0.5.]
+
+```{r}
+
+
+```
 
 
 # Subsection (v)
