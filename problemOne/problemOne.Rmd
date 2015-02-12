@@ -95,8 +95,9 @@ The estimated probability is 0.7706042
 Now, estimate a probit model for P( favwin  1spread ). Interpret and test the null hypothesis that the intercept is zero. [Hint: Remember that theta= 0.5.]
 
 ```{r}
-
-
+data1$favwin<-as.factor(data1$favwin)
+lm2<-glm(favwin~spread, data=data1, family=binomial(link="probit"))
+summary(lm2)
 ```
 
 
