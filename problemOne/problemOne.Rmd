@@ -85,19 +85,20 @@ favored team wins when spread=10?
 Yes, spread is statistically significant.
 
 ```{r}
-## estimatedProbaility
-0.5769492+(0.0193655*10)
+## estimate the Probaility
+newdata1<-data.frame(spread=10)
+predict(lm1, type="response", newdata1)
 ```
 
 The estimated probability is 0.7706042
 
 # Subsection (iv)
-Now, estimate a probit model for P( favwin  1spread ). Interpret and test the null hypothesis that the intercept is zero. [Hint: Remember that theta= 0.5.]
+Now, estimate a probit model for P(favwin=1|spread ). Interpret and test the null hypothesis that the intercept is zero. [Hint: Remember that theta= 0.5.]
 
 ```{r}
 data1$favwin<-as.factor(data1$favwin)
-lm2<-glm(favwin~spread, data=data1, family=binomial(link="probit"))
-summary(lm2)
+glm1<-glm(favwin~spread, data=data1, family=binomial(link="probit"))
+stargazer(glm1, type = "text")
 ```
 
 
@@ -105,19 +106,61 @@ summary(lm2)
 Use the probit model to estimate the probability that the favored team wins when
 spread  10. Compare this with the LPM estimate from part (iii).
 
+```{r}
+## estimated Probaility using the probit model
+newdata2<-data.frame(spread=10)
+predict(glm1, type="response", newdata2)
+```
+
+The estimated probability is 0.8196512. This probability is higher than the one estimated using the LPM.
 
 # Subsection (vi)
 Add the variables favhome, fav25, and und25 to the probit model and test joint significance of these variables using the likelihood ratio test. (How many df are in the chi-square distribution?) Interpret this result, focusing on the question of whether the spread incorporates all observable information prior to a game.
 
 
+```{r}
+## convert the new variables from character types to factor types
+data1$favhome<-as.factor(data1$favhome)
+data1$fav25<-as.factor(data1$fav25)
+data1$und25<-as.factor(data1$und25)
+
+## add the variables to the probit model
+glm2<-glm(favwin~spread+favhome+fav25+und25, data=data1, family=binomial(link="probit"))
+stargazer(glm2, type = "text")
+```
+
+The value of the Log Likelihood is -262.642
+ 
+```{r}
+## calculate the value of the likelihood ratio statistic
+2*(-262.642 - (-263.562))
+```
+
+Since the likelihood ratio statistic of 1.84 is greater than the p-value from the chi-square distribution of 0.61, the added variables are jointly not significant. This can be infered to mean that these added variables have no additional power for predicting the outcome.
+
 ## Problem C17.2
 
 Use the data in LOANAPP.RAW for this exercise
+
 
 # Subsection (i)
 Estimate a probit model of approve on white. Find the estimated probability of
 loan approval for both whites and nonwhites. How do these compare with the
 linear probability estimates?
+
+```{r}
+## start by reading the data into R
+data2<-read_dta("LOANAPP.dta")
+
+## convert the variables from character types to factors
+data2$white<-as.factor(data2$white)
+data2$approve<-as.factor(data2$approve)
+
+## estimate a probit model of approve on white
+glm3<-glm(approve~white, data2, family=binomial(link="probit"))
+stargazer(glm3, type="text")
+
+```
 
 # Subsection (ii)
 Now, add the variables hrat, obrat, loanprc, unem, male, married, dep, sch,
