@@ -182,12 +182,16 @@ statistically significant evidence of discrimination against nonwhites?
 ```{r}
 ## convert some of variables from characters to factors
 data2$male<-as.factor(data2$male)
-data2$male<-as.factor(data2$male)
-data2$male<-as.factor(data2$male)
-data2$male<-as.factor(data2$male)
-data2$male<-as.factor(data2$male)
-data2$male<-as.factor(data2$male)
-data2$male<-as.factor(data2$male)
+data2$married<-as.factor(data2$married)
+data2$dep<-as.factor(data2$dep)
+data2$sch<-as.factor(data2$sch)
+data2$cosign<-as.factor(data2$cosign)
+data2$chist<-as.factor(data2$chist)
+data2$pubrec<-as.factor(data2$pubrec)
+data2$mortlat1<-as.factor(data2$mortlat1)
+data2$mortlat2<-as.factor(data2$mortlat2)
+data2$vr<-as.factor(data2$vr)
+
 
 ## estimate the new probit model
 glm4<-glm(approve~white+hrat+obrat+loanprc+unem+male+married+dep+sch+cosign+chist+pubrec+mortlat2+vr, data2, family=binomial(link="probit"))
