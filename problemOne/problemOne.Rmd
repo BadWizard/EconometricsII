@@ -15,6 +15,8 @@ P(favwin=1|spread)=beta0 + beta1(spread)
 
 Explain why, if the spread incorporates all relevant information, we expect beta0=0.5
 
+If spread is zero, there is no favorite, and the probability that the team we (arbitrarily) label the favorite should have a 50% chance of winning.
+
 # subsection (ii)
 
 Estimate the model from part (i) by OLS. Test H0:0.5 against a two-sided
@@ -40,7 +42,7 @@ summary(lm1)
 Is spread statistically significant? What is the estimated probability that the
 favored team wins when spread=10?
 
-Spread is 
+   
 
 # Subsection (iv)
 Now, estimate a probit model for P( favwin  1spread ). Interpret and test the null hypothesis that the intercept is zero. [Hint: Remember that theta= 0.5.]
