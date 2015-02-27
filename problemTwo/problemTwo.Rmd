@@ -1,0 +1,234 @@
+---
+title: "problemTwo"
+author: "Daniel Emaasit"
+date: "February 24, 2015"
+output: html_document
+---
+
+# Problem C17.5
+Using the data in FERTIL1.RAW. 
+
+## Part (i)
+Estimate a poisson regression model for kids, using the same variables in TABLE 13.1. Interpret the coefficient on y82.
+
+```{r}
+# read the data into R
+library(haven)
+fertile_data<-read_dta("FERTIL1.dta")
+
+
+# estimate a poisson regression model
+library(MASS)
+model1<-glm(kids~., family="poisson", data=fertile_data)
+library(stargazer)
+stargazer(model1)
+
+````
+
+## Part (ii)
+What is the estimated percentage difference in fertility between a black woman and 
+a non black woman, holding other factors fixed?
+
+```{r}
+
+
+````
+
+## Part (iii)
+Obtain the estimated standard deviation Is there evidence of over or underdispersion?
+
+```{r}
+
+
+````
+
+## Part (iv)
+Compute the fitted values from the Posson regression and obtain the R-squared as the squared
+correlation betweein kids and estimated kids. Compare this with the R-squared for the linear regression model
+
+```{r}
+
+
+````
+
+# Problem C17.9
+Use the data in APPLE.RAW for this exercise. 
+
+## Part (i)
+Of the 660 families in the sample, how many report wanting none of the eco-labeled
+apples at the set price?
+
+```{r}
+# read the data into R
+apple_data<-read_dta("APPLE.dta")
+
+# count the no of families wanting none of the ecolabeled apples
+library(dplyr)
+apple_data %>% filter(ecolbs==0) %>% count()
+````
+
+248 families report wanting none of the eco-labelled apples at the set price
+
+## Part (ii)
+Does the variable ecolbs seem to have a continous distribution over strictly positive
+values? What implications does your answer have for the suitability of a Tobit model
+for ecolbs?
+
+```{r}
+# look at a sample of the data
+head(apple_data$ecolbs, n=10)
+````
+
+The variable ecolbs does not have a continous distribution. This type of distribution violates the latent variable formulation underlying the Tobit model.
+
+## Part (iii)
+Estimate a Tobit model for ecolbs with ecoprc, regprc, faminc, and hhsize as explanatory variables. Which variables are significant at the 1% level?
+
+```{r}
+# estimate a Tobit model
+library(AER)
+tobit_model1<-tobit(ecolbs~ecoprc+regprc+faminc+hhsize, data=apple_data)
+stargazer(tobit_model1, type="text")
+
+````
+
+The variables significant at the 1% level include: 
+
+## Part (iv)
+Are faminc and hhsize jointly significant?
+
+```{r}
+
+
+````
+
+## Part (v)
+Are the signs of the coeffficient on the price variables from part(iii) what you expect? Explain
+
+```{r}
+
+
+````
+
+## Part (vi)
+Test the hypothesis.
+
+```{r}
+
+
+````
+
+## Part (vii)
+Obtain the estimates of E(ecolbs|x) for all observations in the sample.
+
+```{r}
+
+
+````
+
+## Part (viii)
+Compute the squared correlation between ecolbs and estimated ecolbs.
+
+```{r}
+
+
+````
+
+## Part (ix)
+Now, estimate a linear model for ecolbs using the same explanatory variables from part (iii).
+
+```{r}
+
+
+````
+
+## Part (x)
+Evaluate the following statement: "Because the R-squared from the Tobit model is so small, the estimated price effects are probably inconsisent."
+
+```{r}
+
+
+````
+
+# Problem C17.10
+Use the data in SMOKE.RAW for this exercise. 
+
+## Part (i)
+How many people in the sample do not smoke at all? what fraction of people claim to smoke 20 cigarettes a day? Why do you think there is a pile up of people at 20 cigarettes?
+
+```{r}
+
+
+````
+
+## Part (ii)
+Does cigs seem a good candidate for havinf a condidtional Poisson distribution?
+
+```{r}
+
+
+````
+
+## Part (iii)
+Estimate a Poisson regression model?
+
+```{r}
+
+
+````
+
+## Part (iv)
+Using the maximum likelihood standard errors, are the price and income variables sististically significant at the 5% level?
+
+```{r}
+
+
+````
+
+## Part (v)
+Obtain the estimate of the variance. What is the estimated standard deviation? How should you adjust the standard errors from part (iv)?
+
+```{r}
+
+
+````
+
+## Part (vi)
+Using the adjusted standard errors, are the price and income elasticities now statistically different from zero? Explain.
+
+```{r}
+
+
+````
+
+## Part (vii)
+Are the education and age variables significant using the more robust standard errors? How do interpret the coefficient on educ?
+
+```{r}
+
+
+````
+
+## Part (viii)
+obtained the fitted values from the poisson regression model. Find the minimum and maximum values.
+
+```{r}
+
+
+````
+
+## Part (ix)
+Using the fitted values from part (viii), obtain the squared correlation coefficient between esimated y and y.
+
+```{r}
+
+
+````
+
+## Part (x)
+Estimate a linea model for cigs by OLS, using the explanatory variables
+
+```{r}
+
+
+````

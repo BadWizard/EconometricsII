@@ -5,10 +5,10 @@ date: "February 10, 2015"
 output: word_document
 ---
 
-## Problem C17.1
+# Problem C17.1
 Use the data in PNTSPRD.RAW for this exercise:
 
-# Section (i)
+## Section (i)
 The variable favwin is a binary variable if the team favored by the Las Vegas
 point spread wins. A linear probability model to estimate the probability that the favored team wins is:
 P(favwin=1|spread)=beta0 + beta1(spread)
@@ -17,16 +17,13 @@ Explain why, if the spread incorporates all relevant information, we expect beta
 
 If spread is zero, there is no favorite, and the probability that the team we (arbitrarily) label the favorite should have a 50% chance of winning.
 
-# subsection (ii)
+## subsection (ii)
 
 Estimate the model from part (i) by OLS. Test H0:0.5 against a two-sided
 alternative. Use both the usual and heteroskedasticity-robust standard errors.
 
 ```{r}
 ## install packages to read dta files
-install.packages("devtools")
-library("devtools")
-devtools::install_github("hadley/haven")
 library(haven)
 
 ## reada the data file into R
@@ -35,7 +32,8 @@ head(data1)
 
 ## estimate the model from part(i) by OLS using usual standard erros
 lm1<-lm(favwin~spread, data=data1)
-install.packages("stargazer")
+
+library(AER)
 library(stargazer)
 coeftest(lm1)
 
@@ -43,17 +41,16 @@ coeftest(lm1)
 calculated.t.value1=(0.5769492-0.5)/0.0282345
 calculated.t.value1
 
-## the rule
-Reject the null hypothesis if |calculated t value|>|critical t value|,
-
-##decision
-since the |calculated.t.value1|>1.96, we reject the null hypothesis
-
-##inference
-beta0 is not equal to 0.5
-
 ```
 
+The rule:
+Reject the null hypothesis if |calculated t value|>|critical t value|,
+
+The decision:
+since the |calculated.t.value1|>1.96, we reject the null hypothesis
+
+The inference""
+beta0 is not equal to 0.5.
 
 
 ```{r}
@@ -66,19 +63,19 @@ coeftest(lm1, vcov = vcovHC)
 calculated.t.value2=(0.5769492-0.5)/0.0317187
 calculated.t.value2
 
-## the rule
-Reject the null hypothesis if |calculated t value|>|critical t value|,
-
-##decision
-since the |calculated.t.value2|>1.96, we reject the null hypothesis
-
-##inference
-beta0 is not equal to 0.5
 ```
 
+The rule:
+Reject the null hypothesis if |calculated t value|>|critical t value|,
+
+The decision:
+since the |calculated.t.value2|>1.96, we reject the null hypothesis
+
+The inference:
+beta0 is not equal to 0.5
 
 
-# Subsection (iii)
+## Subsection (iii)
 Is spread statistically significant? What is the estimated probability that the
 favored team wins when spread=10?
 
@@ -92,7 +89,7 @@ predict(lm1, type="response", newdata1)
 
 The estimated probability is 0.7706042
 
-# Subsection (iv)
+## Subsection (iv)
 Now, estimate a probit model for P(favwin=1|spread ). Interpret and test the null hypothesis that the intercept is zero. [Hint: Remember that theta= 0.5.]
 
 ```{r}
@@ -102,7 +99,7 @@ stargazer(glm1, type = "text")
 ```
 
 
-# Subsection (v)
+## Subsection (v)
 Use the probit model to estimate the probability that the favored team wins when
 spread  10. Compare this with the LPM estimate from part (iii).
 
@@ -114,7 +111,7 @@ predict(glm1, type="response", newdata2)
 
 The estimated probability is 0.8196512. This probability is higher than the one estimated using the LPM.
 
-# Subsection (vi)
+## Subsection (vi)
 Add the variables favhome, fav25, and und25 to the probit model and test joint significance of these variables using the likelihood ratio test. (How many df are in the chi-square distribution?) Interpret this result, focusing on the question of whether the spread incorporates all observable information prior to a game.
 
 
@@ -138,12 +135,12 @@ The value of the Log Likelihood is -262.642
 
 Since the likelihood ratio statistic of 1.84 is greater than the p-value from the chi-square distribution of 0.61, the added variables are jointly not significant. This can be infered to mean that these added variables have no additional power for predicting the outcome.
 
-## Problem C17.2
+# Problem C17.2
 
 Use the data in LOANAPP.RAW for this exercise
 
 
-# Subsection (i)
+## Subsection (i)
 Estimate a probit model of approve on white. Find the estimated probability of
 loan approval for both whites and nonwhites. How do these compare with the
 linear probability estimates?
@@ -174,7 +171,7 @@ predict(glm3, type="response", newdata4)
 The predicted probability for whites and non-whites is 0.9083879 and 0.7077922 respectively.
 
 
-# Subsection (ii)
+## Subsection (ii)
 Now, add the variables hrat, obrat, loanprc, unem, male, married, dep, sch,
 cosign, chist, pubrec, mortlat1, mortlat2, and vr to the probit model. Is there
 statistically significant evidence of discrimination against nonwhites?
@@ -197,53 +194,119 @@ data2$vr<-as.factor(data2$vr)
 glm4<-glm(approve~white+hrat+obrat+loanprc+unem+male+married+dep+sch+cosign+chist+pubrec+mortlat2+vr, data2, family=binomial(link="probit"))
 stargazer(glm4, type="text")
 
+## the calculated t value is
+(0.525-0/0.097)
+
 ```
 
+The point estimate for white = 0.525 with standard errors of 0.097. Since the calculated t-value of 5.412 is greater than the critical t-value of 1.96, we reject the null hypothesis that whites is equal to zero. The inference is that white is significant. Hence there is stilll strong evidence of discrimination against non whites.
 
 
-# Subsction (iii)
+## Subsction (iii)
 Estimate the model from part (ii) by logit. Compare the coefficient on white to the
 probit estimate.
 
+```{r}
+## estimate the model by logit
+glm5<-glm(approve~white+hrat+obrat+loanprc+unem+male+married+dep+sch+cosign+chist+pubrec+mortlat2+vr, data2, family=binomial(link="logit"))
+stargazer(glm5, type="text")
+```
 
-# Subsection (iv)
+The coefficient of white is 0.946 with a standard error of 0.173.
+
+
+## Subsection (iv)
 Use equation (17.17) to estimate the sizes of the discrimination effects for probit and logit.
 
+```{r}
+## multiply the coefficient from the logit model by 0.625
+0.625*0.946
+```
 
-## Problem C17.3
+The scaled cofficient from the logit model=0.59125, which is close to the one from the probit model.
+
+# Problem C17.3
 Use the data in FRINGE.RAW for this exercise
 
-# Subsection (i)
+## Subsection (i)
 For what percentage of the workers in the sample is pension equal to zero? What
 is the range of pension for workers with nonzero pension benefits? Why is a Tobit
 model appropriate for modeling pension?
 
+```{r}
+## start by reading the data into R
+data3<-read_dta("FRINGE.dta")
 
-# Subsection (ii)
+## calculate the percentage of the workers whose pension is equal to zero
+(172/616)*100
+
+```
+
+The range is $7.28 to $2880.27. The tobit model is appropriate because the sample consists of 28% workers with zero pension benefits, and the range of positive benefits is wide.
+
+## Subsection (ii)
 Estimate a Tobit model explaining pension in terms of exper, age, tenure, educ,
 depends, married, white, and male. Do whites and males have statistically significant higher expected pension benefits?
 
+```{r}
+## estimate a tobit model 
+data3$exper<-as.numeric(data3$exper)
+data3$age<-as.numeric(data3$age)
+data3$tenure<-as.numeric(data3$tenure)
+data3$educ<-as.numeric(data3$educ)
+data3$depends<-as.numeric(data3$depends)
+data3$married<-as.factor(data3$married)
+data3$white<-as.factor(data3$white)
+data3$male<-as.factor(data3$male)
 
-# Subsection (iii)
+tobit.model<-tobit(pension~exper+age+tenure+educ+depends+married+white+male, data=data3)
+summary(tobit.model)
+```
+
+Male is significant while White is not significant.
+
+## Subsection (iii)
 Use the results from part (ii) to estimate the difference in expected pension
 benefits for a white male and a nonwhite female, both of whom are 35 years old,
 are single with no dependents, have 16 years of education, and have 10 years of
 experience.
 
+```{r}
 
-# Subsection (iv)
+## create new data frames with the new data points
+newdata5<-data.frame(white="1",male="1",age=35,married="0",depends=0,educ=16,exper=10, tenure=10)
+newdata6<-data.frame(white="0",male="0",age=35,married="0",depends=0,educ=16,exper=10, tenure=10)
+
+## use the predicted values to calculate the difference
+predict(tobit.model, newdata5) - predict(tobit.model, newdata6)
+```
+
+The difference is $ 452.236
+
+## Subsection (iv)
 Add union to the Tobit model and comment on its significance.
 
+```{r}
+## add union to the tobit model and comment on its significance
+data3$union<-as.numeric(data3$union)
 
-# Subsection (v)
+tobit.model2<-tobit(pension~exper+age+tenure+educ+depends+married+white+male+union, data=data3)
+summary(tobit.model2)
+```
+
+Union is significant in the model
+
+## Subsection (v)
 Apply the Tobit model from part (iv) but with peratio, the pension-earnings ratio,
 as the dependent variable. (Notice that this is a fraction between zero and one, but,though it often takes on the value zero, it never gets close to being unity. Thus, a Tobit model is fine as an approximation.) Does gender or race have an effect on the pension-earnings ratio?
 
+```{r}
+## using peratio as the dependent variable
+tobit.model3<-tobit(peratio~exper+age+tenure+educ+depends+married+white+male+union, data=data3)
+summary(tobit.model3)
+```
 
-
-
-
-
+Gender and race dont have significants effects the pension-earnings ratio.
 
 
 
