@@ -2,7 +2,7 @@
 title: "problemTwo"
 author: "Daniel Emaasit"
 date: "February 24, 2015"
-output: html_document
+output: word_document
 ---
 
 # Problem C17.5
@@ -15,41 +15,47 @@ Estimate a poisson regression model for kids, using the same variables in TABLE 
 # read the data into R
 library(haven)
 fertile_data<-read_dta("FERTIL1.dta")
+fertile_data[]<-lapply(fertile_data, as.numeric)
+fertile_data[,7:20]<-lapply(fertile_data[,7:20], as.factor)
 
 
 # estimate a poisson regression model
 library(MASS)
-model1<-glm(kids~., family="poisson", data=fertile_data)
+poisson_model1<-glm(kids~., family="poisson", data=fertile_data)
 library(stargazer)
-stargazer(model1)
-
+stargazer(poisson_model1, type = "text")
 ````
+
+The coefficient shows that the fertility was about 12.5% lower in this time period.
 
 ## Part (ii)
 What is the estimated percentage difference in fertility between a black woman and 
 a non black woman, holding other factors fixed?
 
 ```{r}
-
-
+(exp(0.347)-1)*100
 ````
+
+The estimated percentage difference is 41.5%
 
 ## Part (iii)
-Obtain the estimated standard deviation Is there evidence of over or underdispersion?
+Obtain the estimated standard deviation .Is there evidence of over or underdispersion?
 
 ```{r}
-
-
+predicted_values1<-predict(poisson_model1, type="response", fertile_data )
 ````
+
+There is evidence of underdispersion.
 
 ## Part (iv)
-Compute the fitted values from the Posson regression and obtain the R-squared as the squared
-correlation betweein kids and estimated kids. Compare this with the R-squared for the linear regression model
+Compute the fitted values from the Poisson regression and obtain the R-squared as the squared correlation between kids and estimated kids. Compare this with the R-squared for the linear regression model
 
 ```{r}
-
-
+fitted_values<-predict(poisson_model1, type="response", fertile_data)
+cor(fertile_data$kids, fitted_values)^2
 ````
+
+R-squared from the OLS model is bigger
 
 # Problem C17.9
 Use the data in APPLE.RAW for this exercise. 
@@ -186,67 +192,70 @@ Estimate a Poisson regression model for cigs, including log(cigpric), log(income
 
 ```{r}
 # convert string variables to factor variables
-
-
+smoke_data$white<-as.factor(smoke_data$white)
+smoke_data$age<-as.numeric(smoke_data$age)
+smoke_data$cigs<-as.numeric(smoke_data$cigs)
+smoke_data$restaurn<-as.factor(smoke_data$restaurn)
 
 # estimate a poisson regression model
 poisson_model2<-glm(cigs~lcigpric+lincome+white+educ+age+agesq, family="poisson", data=smoke_data)
-
-
+stargazer(poisson_model2, type="text")
 ````
+
+The price elasticity is -0.578 and the income elasticity is 0.004
 
 ## Part (iv)
 Using the maximum likelihood standard errors, are the price and income variables sististically significant at the 5% level?
 
-```{r}
-
-
-````
+The price variable is significant while the income variable is not significant.
 
 ## Part (v)
 Obtain the estimate of the variance. What is the estimated standard deviation? How should you adjust the standard errors from part (iv)?
 
-```{r}
+The standard errors should be adjusted by multiplying by the estimated standard deviation.
 
-
-````
 
 ## Part (vi)
 Using the adjusted standard errors, are the price and income elasticities now statistically different from zero? Explain.
 
-```{r}
-
-
-````
+The price elasticity is statistically significant while the income elasticity is not significant
 
 ## Part (vii)
-Are the education and age variables significant using the more robust standard errors? How do interpret the coefficient on educ?
+Are the education and age variables significant using the more robust standard errors? How do you interpret the coefficient on educ?
 
-```{r}
+The education and age variables are still significant. The coefficient on education implies that an increase in education by one year reduces the number of cigaretters consumed by 5.5%.
 
-
-````
 
 ## Part (viii)
-obtained the fitted values from the poisson regression model. Find the minimum and maximum values.
+Obtain the fitted values from the poisson regression model. Find the minimum and maximum values and discuss how well the exponential model predicts heavy cigarette smoking.
 
 ```{r}
+# obtain the fitted values
+predicted_values<-predict(poisson_model2, type="response", smoke_data)
 
-
+# find the minimum and maximum values
+range(predicted_values)
 ````
+
+It is very difficult predicting heavy smoking using the available explanatory variables. 
 
 ## Part (ix)
 Using the fitted values from part (viii), obtain the squared correlation coefficient between esimated y and y.
 
 ```{r}
-
-
+# obtain the square correlation coefficeitn
+cor(predicted_values, smoke_data$cigs)^2
 ````
 
 ## Part (x)
-Estimate a linea model for cigs by OLS, using the explanatory variables
+Estimate a linear model for cigs by OLS, using the explanatory variables. Does the linear model or exponential model provide a better fit? Is either R-squared very large?
 
 ```{r}
-
-
+# estimate a linear regression model
+linear_model2<-lm(cigs~lcigpric+lincome+white+educ+age+agesq, data=smoke_data)
+stargazer(linear_model2, type="text")
 ````
+
+R-squared values for both are small and almost the same.
+
+# Problem 71.5
