@@ -96,8 +96,8 @@ The variables significant at the 1% level include:
 
 ## Part (iv)
 Are faminc and hhsize jointly significant?
-
 ```{r}
+
 
 
 ````
@@ -105,50 +105,57 @@ Are faminc and hhsize jointly significant?
 ## Part (v)
 Are the signs of the coeffficient on the price variables from part(iii) what you expect? Explain
 
-```{r}
-
-
-````
+The signs are as expected because as the price of the product increases the demand decreases
 
 ## Part (vi)
 Test the hypothesis.
-
 ```{r}
-
-
+# calculate the t value
+calculated_t_value<-(-5.705+5.525)/(0.885+1.066)
+calculated_t_value
 ````
 
+The rule: Reject the null hypothesis if |calculated t value|>|critical t value|,
+
+The decision: since the |calculated.t.value|<1.96, we FAIL to reject the null hypothesis
+
+The inference: The ecopric is equal to the negative value of regprc
+
 ## Part (vii)
-Obtain the estimates of E(ecolbs|x) for all observations in the sample.
+Obtain the estimates of E(ecolbs|x) for all observations in the sample. what are the smallest and largest values?
 
 ```{r}
+# predict the estimates
+estimated_ecolbs<-predict(tobit_model1, type="response",apple_data)
 
-
+# find the range in the estimated values
+range(estimated_ecolbs)
 ````
 
 ## Part (viii)
 Compute the squared correlation between ecolbs and estimated ecolbs.
 
 ```{r}
-
-
+# find the squared correlation between the actual and estimated values
+cor(apple_data$ecolbs,estimated_ecolbs)^2
 ````
 
 ## Part (ix)
-Now, estimate a linear model for ecolbs using the same explanatory variables from part (iii).
+Now, estimate a linear model for ecolbs using the same explanatory variables from part (iii). Why are the OLS estimates so much smaller than the Tobit estimates? In terms of goodness-of-fit, is the Tobit model better than the linear model?
 
 ```{r}
-
+# estimate a linear model
+linear_model<-lm(ecolbs~ecoprc+regprc+faminc+hhsize, data=apple_data)
+stargazer(linear_model, type = "text")
 
 ````
+
+The OLS estimates are so much smaller because they are not scaled like the Tobit estimates. The OLS model fits this data better because its R-squared value is greater i.e 0.046 compared to 0.044
 
 ## Part (x)
 Evaluate the following statement: "Because the R-squared from the Tobit model is so small, the estimated price effects are probably inconsisent."
 
-```{r}
-
-
-````
+I think this statement is incorrent.  
 
 # Problem C17.10
 Use the data in SMOKE.RAW for this exercise. 
@@ -157,22 +164,33 @@ Use the data in SMOKE.RAW for this exercise.
 How many people in the sample do not smoke at all? what fraction of people claim to smoke 20 cigarettes a day? Why do you think there is a pile up of people at 20 cigarettes?
 
 ```{r}
+# read the data into R
+smoke_data<-read_dta("SMOKE.dta")
 
+# count the number of people who do not smoke
+smoke_data %>% filter(cigs==0) %>% count()
 
+# count the number of people who smoke 20 cigarettes
+smoke_data %>% filter(cigs==20) %>% count()
 ````
+
+Apparently there are 20 cigarettes in a pack, so that could be a reason why there's a pile up.
 
 ## Part (ii)
-Does cigs seem a good candidate for havinf a condidtional Poisson distribution?
+Does cigs seem a good candidate for having a condidtional Poisson distribution?
 
-```{r}
-
-
-````
+No, cigs does not seem a good candidate because Poisson distribution does not allow for such focal points that in the cigs variable.
 
 ## Part (iii)
-Estimate a Poisson regression model?
+Estimate a Poisson regression model for cigs, including log(cigpric), log(income),white, educ, age, and age2 as explanatory variables. What are the estimated price and income elasticities??
 
 ```{r}
+# convert string variables to factor variables
+
+
+
+# estimate a poisson regression model
+poisson_model2<-glm(cigs~lcigpric+lincome+white+educ+age+agesq, family="poisson", data=smoke_data)
 
 
 ````
