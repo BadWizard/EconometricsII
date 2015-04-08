@@ -8,23 +8,187 @@ output: html_document
 # Problem C15.3
 Use the data in CARD.RAW for this exercise.  
 
-## Subsectin (i)
-In order for IV to be consistent, the IV for educ, nearc4, must be uncorrelated with u. Could nearc4
-be correlated with things in the error term, such as unobserved ability? Explain.
+## Subsection (i)
+The equation we estimated in Example 15.4 can be written as  
+
+log(wage) = beta0 + beta1educ + beta2exper + … + u,
+
+where the other explanatory variables are listed in Table 15.1. In order for IV to be consistent, the IV for educ, nearc4, must be uncorrelated with u. Could nearc4 be correlated with things in the error term, such as unobserved ability? Explain.  
+
+
+
 
 ## Subsection (ii)
 For a subsample of the men in the data set, an IQ score is available. Regress IQ on
 nearc4 to check whether average IQ scores vary by whether the man grew up near
-a four-year college. What do you conclude?
+a four-year college. What do you conclude?  
+
+
+## Subsection (iii)
+Now, regress IQ on nearc4, smsa66, and the 1966 regional dummy variables
+reg662,…,reg669. Are IQ and nearc4 related after the geographic dummy variables
+have been partialled out? Reconcile this with your findings from part (ii).  
+
+## Subsection (iv)
+ From parts (ii) and (iii), what do you conclude about the importance of controlling
+for smsa66 and the 1966 regional dummies in the log(wage) equation?  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Problem C15.5
+Use the data in CARD.RAW for this exercise.
+
+## Subsection (i)
+In Table 15.1, the difference between the IV and OLS estimates of the return to
+education is economically important. Obtain the reduced form residuals, vˆ2, from
+the reduced form regression educ on nearc4, exper, exper2, black, smsa, south,
+smsa66, reg662, ..., reg669—see Table15.1. Use these to test whether educ is
+exogenous; that is, determine if the difference between OLS and IV is statistically
+significant.
+
+
+
+## Subsection (ii)
+Estimate the equation by 2SLS, adding nearc2 as an instrument. Does the coefficient
+on educ change much?
+
+
+## Subsection (iii)
+Test the single overidentifying restriction from part (ii).
+
 
 
 # Problem C15.8
+Use the data in 401KSUBS.RAW for this exercise. 
+
+## Subsection (i)
+Estimate the equation by OLS and discuss the estimated effect of p401k.
+
+
+## Subsection (ii)
+For the purposes of estimating the ceteris paribus tradeoff between participation
+in two different types of retirement savings plans, what might be a problem with
+ordinary least squares?
+
+## Subsection (iii)
+The variable e401k is a binary variable equal to one if a worker is eligible to participate
+in a 401(k) plan. Explain what is required for e401k to be a valid IV for
+p401k. Do these assumptions seem reasonable?
+
+
+## Subsection (iv)
+Estimate the reduced form for p401k and verify that e401k has significant partial
+correlation with p401k. Since the reduced form is also a linear probability model,
+use a heteroskedasticity-robust standard error.
+
+## Subsection (v)
+Now, estimate the structural equation by IV and compare the estimate of b1 with the
+OLS estimate. Again, you should obtain heteroskedasticity-robust standard errors.
+
+
+## Subsection (vi)
+Test the null hypothesis that p401k is in fact exogenous, using a heteroskedasticityrobust
+test.  
 
 
 # Problem C15.9
+The purpose of this exercise is to compare the estimates and standard errors obtained by
+correctly using 2SLS with those obtained using inappropriate procedures. Use the data
+file WAGE2.RAW.
+
+## Subsection (i)
+Use a 2SLS routine to estimate the equation  
+
+log(wage) 5 b0 1 b1educ 1 b2exper 1 b3tenure 1 b4black 1 u,  
+
+where sibs is the IV for educ. Report the results in the usual form.
+
+
+## Subsection (ii)
+Now, manually carry out 2SLS. That is, first regress educi
+ on sibsi
+, experi
+, tenurei
+,
+and blacki
+ and obtain the fitted values, educi
+, i 5 1, ..., n. Then, run the second
+stage regression log(wagei
+) on educ i
+, experi
+, tenurei
+, and blacki
+, i 5 1, ..., n. Verify
+that the b ˆ
+j are identical to those obtained from part (i), but that the standard errors
+are somewhat different. The standard errors obtained from the second stage regression
+when manually carrying out 2SLS are generally inappropriate.
+
+
+## Subsection (iii)
+Now, use the following two-step procedure, which generally yields inconsistent
+parameter estimates of the bj
+, and not just inconsistent standard errors. In step
+one, regress educi
+ on sibsi
+ only and obtain the fitted values, say educi
+. (Note that
+this is an incorrect first stage regression.) Then, in the second step, run the regression
+of log(wagei
+) on educi
+, experi
+, tenurei
+, and blacki
+, i 5 1, …, n. How does the
+estimate from this incorrect, two-step procedure compare with the correct 2SLS
+estimate of the return to education?
+
 
 
 # Problem C15.10
+Use the data in HTV.RAW for this exercise.
+
+## Subsection (i)
+Run a simple OLS regression of log(wage) on educ. Without controlling for other
+factors, what is the 95% confidence interval for the return to another year of
+education?
+
+## Subsection (ii)
+The variable ctuit, in thousands of dollars, is the change in college tuition facing
+students from age 17 to age 18. Show that educ and ctuit are essentially uncorrelated.
+What does this say about ctuit as a possible IV for educ in a simple regression
+analysis?
+
+## Subsection (iii)
+Now, add to the simple regression model in part (i) a quadratic in experience and a
+full set of regional dummy variables for current residence and residence at age 18.
+Also include the urban indicators for current and age 18 residences. What is the
+estimated return to a year of education?
+
+## Subsection (iv)
+Again using ctuit as a potential IV for educ, estimate the reduced form for educ.
+[Naturally, the reduced form for educ now includes the explanatory variables in
+part (iii).] Show that ctuit is now statistically significant in the reduced form for
+educ.  
+
+## Subsectioin (v)
+Estimate the model from part (iii) by IV, using ctuit as an IV for educ. How does
+the confidence interval for the return to education compare with the OLS CI from
+part (iii)?
+
+
+## Subsection (vi)
+Do you think the IV procedure from part (v) is convincing?
