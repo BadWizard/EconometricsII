@@ -11,59 +11,87 @@ Use the data in CARD.RAW for this exercise.
 ## Subsection (i)
 The equation we estimated in Example 15.4 can be written as  
 
-log(wage) = beta0 + beta1educ + beta2exper + … + u,
+log(wage) = beta0 + beta1educ + beta2exper + ... + u,
 
 where the other explanatory variables are listed in Table 15.1. In order for IV to be consistent, the IV for educ, nearc4, must be uncorrelated with u. Could nearc4 be correlated with things in the error term, such as unobserved ability? Explain.  
 
-
+It's possible for proximity to college to be correlated with things in the error term such as unobserrved ability. One could argue that the presence of a college can motivate an individual to work harder in school so that they can one day make to college themselves.
 
 
 ## Subsection (ii)
 For a subsample of the men in the data set, an IQ score is available. Regress IQ on
 nearc4 to check whether average IQ scores vary by whether the man grew up near
-a four-year college. What do you conclude?  
+a four-year college. What do you conclude?
+
+```{r}
+# read the data into R
+install.packages("haven")
+library(haven)
+card_data <- read_dta("CARD.dta")
+str(card_data)
+
+# Regress IQ on nearc4
+lm_model1 <- lm(iq~nearc4, data = card_data)
+
+# Put the model in a tabular format
+install.packages("stargazer")
+library(stargazer)
+stargazer(lm_model1, type = "text", title = "Regression of IQ on Proximity to College")
+```
+
+The model shows that the predicted IQ is 2.6 points higher if the man grew up near a four-year college. This estimate is statistically significant at a 0.01 level of confidence.
 
 
 ## Subsection (iii)
 Now, regress IQ on nearc4, smsa66, and the 1966 regional dummy variables
-reg662,…,reg669. Are IQ and nearc4 related after the geographic dummy variables
-have been partialled out? Reconcile this with your findings from part (ii).  
+reg662, ... ,reg669. Are IQ and nearc4 related after the geographic dummy variables
+have been partialled out? Reconcile this with your findings from part (ii).
+
+```{r}
+# Regress IQ on nearc4, smsa66, and reg662, ... ,reg669.
+lm_model2 <- lm(iq~nearc4 + smsa66 + reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669, data = card_data)
+
+stargazer(lm_model2, type = "text", title = "Regression of IQ on More Variables")
+```
+
+The model shows that the relationship between IQ and nearc4 is much weaker and statistically insignificant. This shows that when we control for region and environment while growing up, there is no apparent link between IQ score and living near a four-year college. 
+
 
 ## Subsection (iv)
  From parts (ii) and (iii), what do you conclude about the importance of controlling
 for smsa66 and the 1966 regional dummies in the log(wage) equation?  
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+It is important because it allows control for differences in access to colleges that
+might also be correlated with ability. 
 
 
 # Problem C15.5
 Use the data in CARD.RAW for this exercise.
 
 ## Subsection (i)
-In Table 15.1, the difference between the IV and OLS estimates of the return to
-education is economically important. Obtain the reduced form residuals, vˆ2, from
-the reduced form regression educ on nearc4, exper, exper2, black, smsa, south,
-smsa66, reg662, ..., reg669—see Table15.1. Use these to test whether educ is
-exogenous; that is, determine if the difference between OLS and IV is statistically
-significant.
+In Table 15.1, the difference between the IV and OLS estimates of the return to education is economically important. Obtain the reduced form residuals, v2, from the reduced form regression educ on nearc4, exper, expersq, black, smsa, south, smsa66, reg662, ..., reg669 ---see Table15.1. Use these to test whether educ is exogenous; that is, determine if the difference between OLS and IV is statistically significant.
 
+```{r}
+# The reduced form is obtained as follows
+lm_model3 <- lm(educ ~ nearc4 + exper + expersq + black + smsa + south + smsa66 + reg662, + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669, data = card_data)
+
+# Obtain the residuals
+v_residuals <- resid(lm_model3)
+
+# Add the residuals to the original equation
+```
 
 
 ## Subsection (ii)
-Estimate the equation by 2SLS, adding nearc2 as an instrument. Does the coefficient
-on educ change much?
+Estimate the equation by 2SLS, adding nearc2 as an instrument. Does the coefficient on educ change much?
+```{r}
+# Estimate the equation by 2SLS
+install.packages("AER")
+library(AER)
+
+fit_ivreg <- ivreg()
+
+```
 
 
 ## Subsection (iii)
@@ -76,23 +104,43 @@ Use the data in 401KSUBS.RAW for this exercise.
 
 ## Subsection (i)
 Estimate the equation by OLS and discuss the estimated effect of p401k.
+```{r}
+# Read the data into R
+ksubs_data <- read_dta("401KSUBS.dta")
 
+# Fit a linear model by OLS
+fit_lm <- lm(pira ~ p401k + inc + incsq + age, data = ksubs_data)
+
+# Tabulate the model results
+stargazer(fit_lm, type = "text", title = "Model Results using OLS")
+```
+
+The model shows that having a 401(k) plan increases the probability of having an individual retirement account by 0.052.   
 
 ## Subsection (ii)
-For the purposes of estimating the ceteris paribus tradeoff between participation
-in two different types of retirement savings plans, what might be a problem with
-ordinary least squares?
+For the purposes of estimating the ceteris paribus tradeoff between participation in two different types of retirement savings plans, what might be a problem with ordinary least squares?
+
+The model in part(i) does not account for the fact that different people may have different saving preferences. People who are savers tend to have both a 401(k) plan as well as an IRA. This makes the error term positively correlated with p401k. 
+
 
 ## Subsection (iii)
-The variable e401k is a binary variable equal to one if a worker is eligible to participate
-in a 401(k) plan. Explain what is required for e401k to be a valid IV for
-p401k. Do these assumptions seem reasonable?
+The variable e401k is a binary variable equal to one if a worker is eligible to participate in a 401(k) plan. Explain what is required for e401k to be a valid IV for p401k. Do these assumptions seem reasonable?  
+
+Condition 1: e401k has to be correlated with p401k; not surprisingly, this is not an
+issue, as being eligible for a 401(k) plan is, by definition, necessary for participation. (The
+regression in part (iv) verifies that they are strongly positively correlated.) The more difficult
+issue is whether e401k can be taken as exogenous in the structural model. In other words, is
+being eligible for a 401(k) correlated with unobserved taste for saving? If we think workers that
+like to save for retirement will match up with employers that provide vehicles for retirement
+saving, then u and e401k would be positively correlated. Certainly we think that e401k is less
+correlated with u than is p401k. But remember, this alone is not enough to ensure that the IV
+estimator has less asymptotic bias than the OLS estimator; see page 493. 
 
 
 ## Subsection (iv)
-Estimate the reduced form for p401k and verify that e401k has significant partial
-correlation with p401k. Since the reduced form is also a linear probability model,
-use a heteroskedasticity-robust standard error.
+Estimate the reduced form for p401k and verify that e401k has significant partial correlation with p401k. Since the reduced form is also a linear probability model, use a heteroskedasticity-robust standard error.
+
+
 
 ## Subsection (v)
 Now, estimate the structural equation by IV and compare the estimate of b1 with the
