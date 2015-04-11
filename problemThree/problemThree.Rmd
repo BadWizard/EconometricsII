@@ -19,8 +19,7 @@ It's possible for proximity to college to be correlated with things in the error
 
 
 ## Subsection (ii)
-For a subsample of the men in the data set, an IQ score is available. Regress IQ on
-nearc4 to check whether average IQ scores vary by whether the man grew up near
+For a subsample of the men in the data set, an IQ score is available. Regress IQ on nearc4 to check whether average IQ scores vary by whether the man grew up near
 a four-year college. What do you conclude?
 
 ```{r}
@@ -79,6 +78,7 @@ lm_model3 <- lm(educ ~ nearc4 + exper + expersq + black + smsa + south + smsa66 
 v_residuals <- resid(lm_model3)
 
 # Add the residuals to the original equation
+
 ```
 
 
@@ -131,71 +131,103 @@ Condition 2: e401k has to be uncorrelated with the unobserved residual error.
 
 ## Subsection (iv)
 Estimate the reduced form for p401k and verify that e401k has significant partial correlation with p401k. Since the reduced form is also a linear probability model, use a heteroskedasticity-robust standard error.
+```{r}
+# Estimate the reduced form 
+fit_lm2 <- lm(p401k ~ e401k + inc + incsq + age + agesq, data = ksubs_data)
 
+# obtain the model results using a heteroskedasticity-robust standard error
+coeftest(fit_lm2, vcov = vcovHC) 
+```
 
+Eligibility for 401k is statistically significant correlated with the propbability of having a 401k at a 0.01 level of confidence.
 
 ## Subsection (v)
-Now, estimate the structural equation by IV and compare the estimate of b1 with the
-OLS estimate. Again, you should obtain heteroskedasticity-robust standard errors.
+Now, estimate the structural equation by IV and compare the estimate of beta1 with the OLS estimate. Again, you should obtain heteroskedasticity-robust standard errors.
+```{r}
+# Estimate the structural equation by IV
+formula2 <- pira ~ p401k + inc + incsq + age + agesq
+inst2 <- ~ e401k + inc + incsq + age + agesq
+fit_iv2 <- ivreg(formula2, inst = inst2, data = ksubs_data)
+stargazer(fit_iv2, type = "text")
+```
 
+The IV estimate for p401k is less than the OLS estimate.
 
 ## Subsection (vi)
 Test the null hypothesis that p401k is in fact exogenous, using a heteroskedasticityrobust
-test.  
+test.
+```{r}
+# Obtain the reduced form residuals from part (iv)
+v_residuals2 <- resid(fit_lm2)
 
+# Add the residuals to the structural equation and run OLS
+fit_lm3 <- lm(ksubs_data$pira ~ ksubs_data$p401k + ksubs_data$inc + ksubs_data$incsq + ksubs_data$age + ksubs_data$agesq + v_residuals2)
+
+# obtain the model results using a heteroskedasticity-robust test
+coeftest(fit_lm3, vcov = vcovHC) 
+```
+
+The model shows that the residual is statistically significant with t value of 3.9. This means that p401k is endogenous.
 
 # Problem C15.9
-The purpose of this exercise is to compare the estimates and standard errors obtained by
-correctly using 2SLS with those obtained using inappropriate procedures. Use the data
-file WAGE2.RAW.
+The purpose of this exercise is to compare the estimates and standard errors obtained by correctly using 2SLS with those obtained using inappropriate procedures. Use the data file WAGE2.RAW.
 
 ## Subsection (i)
 Use a 2SLS routine to estimate the equation  
 
-log(wage) 5 b0 1 b1educ 1 b2exper 1 b3tenure 1 b4black 1 u,  
+log(wage) = beta0 + beta1educ + beta2exper + beta3tenure + beta4black + u,  
 
 where sibs is the IV for educ. Report the results in the usual form.
+```{r}
+# Read the data into R
+wage_data <- read_dta("WAGE2.dta")
+
+# Use 2SLS
+formula3 <- lwage ~ educ + exper + tenure + black
+inst3 <- ~sibs + exper + tenure + black
+fit_iv3 <- ivreg(formula3, inst = inst3, data = wage_data)
+stargazer(fit_iv3, type = "text")
+```
 
 
 ## Subsection (ii)
-Now, manually carry out 2SLS. That is, first regress educi
- on sibsi
-, experi
-, tenurei
-,
-and blacki
- and obtain the fitted values, educi
-, i 5 1, ..., n. Then, run the second
-stage regression log(wagei
-) on educ i
-, experi
-, tenurei
-, and blacki
-, i 5 1, ..., n. Verify
-that the b ˆ
-j are identical to those obtained from part (i), but that the standard errors
-are somewhat different. The standard errors obtained from the second stage regression
-when manually carrying out 2SLS are generally inappropriate.
+Now, manually carry out 2SLS. That is, first regress educ on sibs, exper, tenure, and black and obtain the fitted values. Then, run the second stage regression log(wage) on educ estimate, exper, tenure, and black. Verify that the estimate beta coefficients are identical to those obtained from part (i), but that the standard errors are somewhat different. The standard errors obtained from the second stage regression when manually carrying out 2SLS are generally inappropriate.
+```{r}
+# First regression
+fit_lm4 <- lm(educ ~ sibs + exper + tenure + black, data = wage_data)
 
+# Obtain the fitted values
+educ_fitted <- fitted(fit_lm4)
+
+# Then run the second stage regression
+fit_lm5 <- lm(wage_data$lwage ~ educ_fitted + wage_data$exper + wage_data$tenure + wage_data$black)
+
+# Display the model results
+stargazer(fit_lm5, type = "text")
+```
+
+The standard errors in part(i) and part(ii) are 0.034 and 0.035 respectively.
 
 ## Subsection (iii)
 Now, use the following two-step procedure, which generally yields inconsistent
-parameter estimates of the bj
-, and not just inconsistent standard errors. In step
-one, regress educi
- on sibsi
- only and obtain the fitted values, say educi
-. (Note that
-this is an incorrect first stage regression.) Then, in the second step, run the regression
-of log(wagei
-) on educi
-, experi
-, tenurei
-, and blacki
-, i 5 1, …, n. How does the
-estimate from this incorrect, two-step procedure compare with the correct 2SLS
-estimate of the return to education?
+parameter estimates of the betaj, and not just inconsistent standard errors. In step one, regress educ on sibs only and obtain the fitted values, say educ estimated. (Note that this is an incorrect first stage regression.) Then, in the second step, run the regression of log(wage) on educ_estimated, , experi
+, tenure, and black. How does the estimate from this incorrect, two-step procedure compare with the correct 2SLS estimate of the return to education?
 
+```{r}
+# First regression
+fit_lm6 <- lm(educ ~ sibs, data = wage_data)
+
+# Obtain the fitted values
+educ_fitted2 <- fitted(fit_lm6)
+
+# Then run the second stage regression
+fit_lm7 <- lm(wage_data$lwage ~ educ_fitted2 + wage_data$exper + wage_data$tenure + wage_data$black)
+
+# Display the model results
+stargazer(fit_lm7, type = "text")
+```
+
+The incorrent method shows a coefficient on 0.07 for estimated eduction. This is lower than the estimate from the correct method of 0.094.
 
 
 # Problem C15.10
@@ -205,30 +237,67 @@ Use the data in HTV.RAW for this exercise.
 Run a simple OLS regression of log(wage) on educ. Without controlling for other
 factors, what is the 95% confidence interval for the return to another year of
 education?
+```{r}
+# Read the data into R
+htv_data <- read_dta("HTV.dta")
+
+# Run a simple OLS
+fit_lm8 <- lm(lwage ~ educ, data = htv_data)
+stargazer(fit_lm8, type = "text", ci = TRUE, ci.level = 0.95)
+```
+
+The 95% confidence interval is [0.088, 0.114].
 
 ## Subsection (ii)
-The variable ctuit, in thousands of dollars, is the change in college tuition facing
-students from age 17 to age 18. Show that educ and ctuit are essentially uncorrelated.
-What does this say about ctuit as a possible IV for educ in a simple regression
-analysis?
+The variable ctuit, in thousands of dollars, is the change in college tuition facing students from age 17 to age 18. Show that educ and ctuit are essentially uncorrelated. What does this say about ctuit as a possible IV for educ in a simple regression analysis?
+```{r}
+# show that educ and ctuit are uncorrelated
+fit_lm9 <- lm(educ ~ ctuit, data = htv_data)
+summary(fit_lm9)
+```
+
+The t-statistic of -0.59 is less than the critical t-value of 1.96.
+We fail to reject the null hypothesis that the estimate for ctuit is zero.
+We conclude that educ and ctuit are uncorrelated. This means that ctuit is not a good IV for educ. 
 
 ## Subsection (iii)
-Now, add to the simple regression model in part (i) a quadratic in experience and a
-full set of regional dummy variables for current residence and residence at age 18.
-Also include the urban indicators for current and age 18 residences. What is the
-estimated return to a year of education?
+Now, add to the simple regression model in part (i) a quadratic in experience and a full set of regional dummy variables for current residence and residence at age 18. Also include the urban indicators for current and age 18 residences. What is the estimated return to a year of education?
+```{r}
+# Add more variables to the simple regression
+fit_lm10 <- lm(lwage ~ educ + exper + expersq + ne + nc + west + ne18 + nc18 + west18 + urban + urban18, data = htv_data)
+stargazer(fit_lm10, type = "text")
+```
+
+The estimated return to a year of education is 13.7%.
 
 ## Subsection (iv)
 Again using ctuit as a potential IV for educ, estimate the reduced form for educ.
 [Naturally, the reduced form for educ now includes the explanatory variables in
-part (iii).] Show that ctuit is now statistically significant in the reduced form for
-educ.  
+part (iii).] Show that ctuit is now statistically significant in the reduced form for educ.  
+```{r}
+# Use ctuit as a potential IV
+fit_lm11 <- lm(educ ~ ctuit + exper + expersq + ne + nc + west + ne18 + nc18 + west18 + urban + urban18, data = htv_data)
+stargazer(fit_lm11, type = "text")
+```
+
+Change in tuition is now statistically significant at 0.01 level of confidence. Hence an increase in tuition fees reduces eduction by 0.165.
 
 ## Subsectioin (v)
 Estimate the model from part (iii) by IV, using ctuit as an IV for educ. How does
 the confidence interval for the return to education compare with the OLS CI from
 part (iii)?
+```{r}
+#Estimate using IV method
+formula4 <- lwage ~ educ + exper + expersq + ne + nc + west + ne18 + nc18 + west18 + urban + urban18
+inst4 <- ~ctuit + exper + expersq + ne + nc + west + ne18 + nc18 + west18 + urban + urban18
+fit_iv4 <- ivreg(formula4, inst = inst4, data = htv_data)
+stargazer(fit_iv4, type = "text", ci = TRUE, ci.level = 0.95)
+```
 
+The confidence interval in the IV method is [0.011, 0.489] which is wider than the one from OLS.
 
 ## Subsection (vi)
-Do you think the IV procedure from part (v) is convincing?
+Do you think the IV procedure from part (v) is convincing?  
+
+The IV estimate has a large standared error thereby showing that the IV procedure is not convincing. Infact ctuit was found not to correlated with eduction.
+
