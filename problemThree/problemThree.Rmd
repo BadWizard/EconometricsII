@@ -2,26 +2,26 @@
 title: "problemThree"
 author: "Daniel"
 date: "April 8, 2015"
-output: html_document
+output: word_document
 ---
 
 # Problem 9.4
 The following equation explains weekly hours of television viewing by a child in terms of the child's age, mother's education, father's education, and number of siblings:
 
-tvhours* = ??0 + ??1age + ??2age2 + ??3motheduc + ??4fatheduc + ??5sibs + u.
+tvhours = ??0 + ??1age + ??2age2 + ??3motheduc + ??4fatheduc + ??5sibs + u.
 
-We are worried that tvhours* is measured with error in our survey. Let tvhours denote the reported hours of television viewing per week.
+We are worried that tvhours is measured with error in our survey. Let tvhours denote the reported hours of television viewing per week.
 
 ## Part (i)
 What do the classical errors-in-variables (CEV) assumptions require in this application?
 
-For the CEV assumptions to hold, we must be able to write tvhours = tvhours star + e0, where the measurement error e0 has zero mean and is uncorrelated with tvhours* and each explanatory variable in the equation.
+The CEV assumptions requires that the measurement error have zero mean and be uncorrelated with tvhours and each explanatory variable in the equation.
 
 
 ## Part (ii)
 Do you think the CEV assumptions are likely to hold? Explain.
 
-The CEV assumptions are unlikely to hold in this example. For children who do not watch TV at all, tvhours* = 0, and it is very likely that reported TV hours is zero. So if tvhours* = 0 then e0 = 0 with high probability. If tvhours* > 0, the measurement error can be positive or negative, but, since tvhours ??? 0, e0 must satisfy e0 ??? ???tvhours*. So e0 and tvhours* are likely to be correlated. As mentioned in part (i), because it is the dependent variable that is measured with error, what is important is that e0 is uncorrelated with the explanatory variables. But this is unlikely to be the case, because tvhours* depends directly on the explanatory variables. Or, we might argue directly that more highly educated parents tend to underreport how much television their children watch, which means e0 and the education variables are negatively correlated. 
+I don't think the CEV assumptions are ikely to hold. This is because tvhours depends directly on the explanatory variables. 
 
 # Problem 15.2
 Suppose that you wish to estimate the effect of class attendance on student performance, as in Example 6.3. A basic model is  
@@ -119,16 +119,13 @@ a four-year college. What do you conclude?
 
 ```{r}
 # read the data into R
-install.packages("haven")
 library(haven)
 card_data <- read_dta("CARD.dta")
-str(card_data)
 
 # Regress IQ on nearc4
 lm_model1 <- lm(iq~nearc4, data = card_data)
 
 # Put the model in a tabular format
-install.packages("stargazer")
 library(stargazer)
 stargazer(lm_model1, type = "text", title = "Regression of IQ on Proximity to College")
 ```
@@ -183,7 +180,6 @@ The coefficient on the residual is 1.0 with a t-statistic of 7. Hence the differ
 Estimate the equation by 2SLS, adding nearc2 as an instrument. Does the coefficient on educ change much?
 ```{r}
 # Estimate the equation by 2SLS
-install.packages("AER")
 library(AER)
 
 formula1 <- lwage ~ educ + nearc4 + exper + expersq + black + smsa + south + smsa66 + reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669
