@@ -5,10 +5,80 @@ date: "April 8, 2015"
 output: html_document
 ---
 
+# Problem 9.4
+The following equation explains weekly hours of television viewing by a child in terms of the child's age, mother's education, father's education, and number of siblings:
+
+tvhours* 5 b0 1 b1age 1 b2age2 1 b3motheduc 1 b4 fatheduc 1 b5sibs 1 u.
+
+We are worried that tvhours* is measured with error in our survey. Let tvhours denote the reported hours of television viewing per week.
+
+## Part (i)
+What do the classical errors-in-variables (CEV) assumptions require in this application?
+
+## Part (ii)
+Do you think the CEV assumptions are likely to hold? Explain.
+
+# Problem 15.2
+Suppose that you wish to estimate the effect of class attendance on student performance, as in Example 6.3. A basic model is  
+
+stndfnl 5 b0 1 b1atndrte 1 b2 priGPA 1 b3ACT 1 u,
+
+where the variables are defined as in Chapter 6.
+
+## Part (i)
+Let dist be the distance from the students' living quarters to the lecture hall. Do you think dist is uncorrelated with u?
+
+## Part (ii)
+Assuming that dist and u are uncorrelated, what other assumption must dist satisfy to be a valid IV for atndrte?
+
+## Part (iii)
+Suppose, as in equation (6.18), we add the interaction term priGPA?atndrte:
+
+stndfnl = beta0 + beta1atndrte + beta2priGPA + beta3ACT + beta4priGPA.atndrte + u.
+
+If atndrte is correlated with u, then, in general, so is priGPA.atndrte. What might be a good IV for priGPA.atndrte? 
+
+
+# Problem 15.4
+Suppose that, for a given state in the United States, you wish to use annual time series data to estimate the effect of the state-level minimum wage on the employment of those 18 to 25 years old (EMP). A simple model is
+
+gEMPt = b0 + b1gMINt + b2gPOPt + b3gGSPt + b4gGDPt + ut,
+
+where MINt is the minimum wage, in real dollars, POPt is the population from 18 to 25 years old, GSPt is gross state product, and GDPt is U.S. gross domestic product. The g prefix indicates the growth rate from year t - 1 to year t, which would typically be approximated by the difference in the logs.
+
+## Part (i)
+If we are worried that the state chooses its minimum wage partly based on unobserved (to us) factors that affect youth employment, what is the problem with OLS estimation?
+
+## Part (ii)
+Let USMINt be the U.S. minimum wage, which is also measured in real terms. Do you think gUSMINt is uncorrelated with ut?
+
+
+## Part (iii)
+By law, any state's minimum wage must be at least as large as the U.S. minimum. Explain why this makes gUSMINt a potential IV candidate for gMINt.
+
+
+# Problem 15.6
+
+## Part (i)
+In the model with one endogenous explanatory variable, one exogenous explanatory variable, and one extra exogenous variable, take the reduced form for y2 (15.26), and plug it into the structural equation (15.22). This gives the reduced form for y1:
+
+y1 = alpha0 + alpha1z1 + alpha2z2 + v1.
+
+Find the aj in terms of the betaj  and the pij.
+
+## Part (ii)
+Find the reduced form error, v1, in terms of u1, v2, and the parameters.
+
+## Part (iii)
+How would you consistently estimate the aj?
+
+
+
+
 # Problem C15.3
 Use the data in CARD.RAW for this exercise.  
 
-## Subsection (i)
+## Part (i)
 The equation we estimated in Example 15.4 can be written as  
 
 log(wage) = beta0 + beta1educ + beta2exper + ... + u,
@@ -18,7 +88,7 @@ where the other explanatory variables are listed in Table 15.1. In order for IV 
 It's possible for proximity to college to be correlated with things in the error term such as unobserrved ability. One could argue that the presence of a college can motivate an individual to work harder in school so that they can one day make to college themselves.
 
 
-## Subsection (ii)
+## Part (ii)
 For a subsample of the men in the data set, an IQ score is available. Regress IQ on nearc4 to check whether average IQ scores vary by whether the man grew up near
 a four-year college. What do you conclude?
 
@@ -41,10 +111,9 @@ stargazer(lm_model1, type = "text", title = "Regression of IQ on Proximity to Co
 The model shows that the predicted IQ is 2.6 points higher if the man grew up near a four-year college. This estimate is statistically significant at a 0.01 level of confidence.
 
 
-## Subsection (iii)
+## Part (iii)
 Now, regress IQ on nearc4, smsa66, and the 1966 regional dummy variables
-reg662, ... ,reg669. Are IQ and nearc4 related after the geographic dummy variables
-have been partialled out? Reconcile this with your findings from part (ii).
+reg662, ... ,reg669. Are IQ and nearc4 related after the geographic dummy variables have been partialled out? Reconcile this with your findings from part (ii).
 
 ```{r}
 # Regress IQ on nearc4, smsa66, and reg662, ... ,reg669.
@@ -53,48 +122,56 @@ lm_model2 <- lm(iq~nearc4 + smsa66 + reg662 + reg663 + reg664 + reg665 + reg666 
 stargazer(lm_model2, type = "text", title = "Regression of IQ on More Variables")
 ```
 
-The model shows that the relationship between IQ and nearc4 is much weaker and statistically insignificant. This shows that when we control for region and environment while growing up, there is no apparent link between IQ score and living near a four-year college. 
+The model shows that nearc4 is statistically insignificant. This means that proximity to a four-year college does not influence the IQ score, controling for region and environment while growing up. 
 
 
-## Subsection (iv)
- From parts (ii) and (iii), what do you conclude about the importance of controlling
-for smsa66 and the 1966 regional dummies in the log(wage) equation?  
+## Part (iv)
+ From parts (ii) and (iii), what do you conclude about the importance of controlling for smsa66 and the 1966 regional dummies in the log(wage) equation?  
 
-It is important because it allows control for differences in access to colleges that
-might also be correlated with ability. 
+It is important because it allows control for differences in access to colleges that might also be correlated with ability. 
 
 
 # Problem C15.5
 Use the data in CARD.RAW for this exercise.
 
-## Subsection (i)
+## Part (i)
 In Table 15.1, the difference between the IV and OLS estimates of the return to education is economically important. Obtain the reduced form residuals, v2, from the reduced form regression educ on nearc4, exper, expersq, black, smsa, south, smsa66, reg662, ..., reg669 ---see Table15.1. Use these to test whether educ is exogenous; that is, determine if the difference between OLS and IV is statistically significant.
 
 ```{r}
 # The reduced form is obtained as follows
-lm_model3 <- lm(educ ~ nearc4 + exper + expersq + black + smsa + south + smsa66 + reg662, + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669, data = card_data)
+lm_model3 <- lm(lwage ~ educ + nearc4 + exper + expersq + black + smsa + south + smsa66 + reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669, data = card_data)
 
 # Obtain the residuals
 v_residuals <- resid(lm_model3)
 
 # Add the residuals to the original equation
+x <- card_data
+lm_model4 <- lm(x$lwage ~ x$educ + x$nearc4 + x$exper + x$expersq + x$black + x$smsa + x$south + x$smsa66 + x$reg662 + x$reg663 + x$reg664 + x$reg665 + x$reg666 + x$reg667 + x$reg668 + x$reg669 + v_residuals)
 
+# Display the model results
+summary(lm_model4)
 ```
 
+The coefficient on the residual is 1.0 with a t-statistic of 7. Hence the difference in the estimates of the return to education is statistically significant. 
 
-## Subsection (ii)
+## Part (ii)
 Estimate the equation by 2SLS, adding nearc2 as an instrument. Does the coefficient on educ change much?
 ```{r}
 # Estimate the equation by 2SLS
 install.packages("AER")
 library(AER)
 
-fit_ivreg <- ivreg()
+formula1 <- lwage ~ educ + nearc4 + exper + expersq + black + smsa + south + smsa66 + reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669
 
+inst1 <- ~ nearc2 + nearc4 + exper + expersq + black + smsa + south + smsa66 + reg662 + reg663 + reg664 + reg665 + reg666 + reg667 + reg668 + reg669
+
+fit_iv1 <- ivreg(formula1, inst = inst1, data = card_data)
+summary(fit_iv1)
 ```
 
+The 2SLS estimate of the coefficient on educ is now 0.29 with a standard error = 0.18. This estimate is bigger than the previous one. 
 
-## Subsection (iii)
+## Part (iii)
 Test the single overidentifying restriction from part (ii).
 
 
@@ -102,7 +179,7 @@ Test the single overidentifying restriction from part (ii).
 # Problem C15.8
 Use the data in 401KSUBS.RAW for this exercise. 
 
-## Subsection (i)
+## Part (i)
 Estimate the equation by OLS and discuss the estimated effect of p401k.
 ```{r}
 # Read the data into R
@@ -117,19 +194,19 @@ stargazer(fit_lm, type = "text", title = "Model Results using OLS")
 
 The model shows that having a 401(k) plan increases the probability of having an individual retirement account by 0.052.   
 
-## Subsection (ii)
+## Part (ii)
 For the purposes of estimating the ceteris paribus tradeoff between participation in two different types of retirement savings plans, what might be a problem with ordinary least squares?
 
 The model in part(i) does not account for the fact that different people may have different saving preferences. People who are savers tend to have both a 401(k) plan as well as an IRA. This makes the error term positively correlated with p401k. 
 
 
-## Subsection (iii)
+## Part (iii)
 The variable e401k is a binary variable equal to one if a worker is eligible to participate in a 401(k) plan. Explain what is required for e401k to be a valid IV for p401k. Do these assumptions seem reasonable?  
 
 Condition 1: e401k has to be correlated with p401k. 
 Condition 2: e401k has to be uncorrelated with the unobserved residual error. 
 
-## Subsection (iv)
+## Part (iv)
 Estimate the reduced form for p401k and verify that e401k has significant partial correlation with p401k. Since the reduced form is also a linear probability model, use a heteroskedasticity-robust standard error.
 ```{r}
 # Estimate the reduced form 
@@ -141,7 +218,7 @@ coeftest(fit_lm2, vcov = vcovHC)
 
 Eligibility for 401k is statistically significant correlated with the propbability of having a 401k at a 0.01 level of confidence.
 
-## Subsection (v)
+## Part (v)
 Now, estimate the structural equation by IV and compare the estimate of beta1 with the OLS estimate. Again, you should obtain heteroskedasticity-robust standard errors.
 ```{r}
 # Estimate the structural equation by IV
@@ -153,7 +230,7 @@ stargazer(fit_iv2, type = "text")
 
 The IV estimate for p401k is less than the OLS estimate.
 
-## Subsection (vi)
+## Part (vi)
 Test the null hypothesis that p401k is in fact exogenous, using a heteroskedasticityrobust
 test.
 ```{r}
@@ -172,7 +249,7 @@ The model shows that the residual is statistically significant with t value of 3
 # Problem C15.9
 The purpose of this exercise is to compare the estimates and standard errors obtained by correctly using 2SLS with those obtained using inappropriate procedures. Use the data file WAGE2.RAW.
 
-## Subsection (i)
+## Part (i)
 Use a 2SLS routine to estimate the equation  
 
 log(wage) = beta0 + beta1educ + beta2exper + beta3tenure + beta4black + u,  
@@ -190,7 +267,7 @@ stargazer(fit_iv3, type = "text")
 ```
 
 
-## Subsection (ii)
+## Part (ii)
 Now, manually carry out 2SLS. That is, first regress educ on sibs, exper, tenure, and black and obtain the fitted values. Then, run the second stage regression log(wage) on educ estimate, exper, tenure, and black. Verify that the estimate beta coefficients are identical to those obtained from part (i), but that the standard errors are somewhat different. The standard errors obtained from the second stage regression when manually carrying out 2SLS are generally inappropriate.
 ```{r}
 # First regression
@@ -208,7 +285,7 @@ stargazer(fit_lm5, type = "text")
 
 The standard errors in part(i) and part(ii) are 0.034 and 0.035 respectively.
 
-## Subsection (iii)
+## Part (iii)
 Now, use the following two-step procedure, which generally yields inconsistent
 parameter estimates of the betaj, and not just inconsistent standard errors. In step one, regress educ on sibs only and obtain the fitted values, say educ estimated. (Note that this is an incorrect first stage regression.) Then, in the second step, run the regression of log(wage) on educ_estimated, , experi
 , tenure, and black. How does the estimate from this incorrect, two-step procedure compare with the correct 2SLS estimate of the return to education?
@@ -233,7 +310,7 @@ The incorrent method shows a coefficient on 0.07 for estimated eduction. This is
 # Problem C15.10
 Use the data in HTV.RAW for this exercise.
 
-## Subsection (i)
+## Part (i)
 Run a simple OLS regression of log(wage) on educ. Without controlling for other
 factors, what is the 95% confidence interval for the return to another year of
 education?
@@ -248,7 +325,7 @@ stargazer(fit_lm8, type = "text", ci = TRUE, ci.level = 0.95)
 
 The 95% confidence interval is [0.088, 0.114].
 
-## Subsection (ii)
+## Part (ii)
 The variable ctuit, in thousands of dollars, is the change in college tuition facing students from age 17 to age 18. Show that educ and ctuit are essentially uncorrelated. What does this say about ctuit as a possible IV for educ in a simple regression analysis?
 ```{r}
 # show that educ and ctuit are uncorrelated
@@ -260,7 +337,7 @@ The t-statistic of -0.59 is less than the critical t-value of 1.96.
 We fail to reject the null hypothesis that the estimate for ctuit is zero.
 We conclude that educ and ctuit are uncorrelated. This means that ctuit is not a good IV for educ. 
 
-## Subsection (iii)
+## Part (iii)
 Now, add to the simple regression model in part (i) a quadratic in experience and a full set of regional dummy variables for current residence and residence at age 18. Also include the urban indicators for current and age 18 residences. What is the estimated return to a year of education?
 ```{r}
 # Add more variables to the simple regression
@@ -270,7 +347,7 @@ stargazer(fit_lm10, type = "text")
 
 The estimated return to a year of education is 13.7%.
 
-## Subsection (iv)
+## Part (iv)
 Again using ctuit as a potential IV for educ, estimate the reduced form for educ.
 [Naturally, the reduced form for educ now includes the explanatory variables in
 part (iii).] Show that ctuit is now statistically significant in the reduced form for educ.  
@@ -282,7 +359,7 @@ stargazer(fit_lm11, type = "text")
 
 Change in tuition is now statistically significant at 0.01 level of confidence. Hence an increase in tuition fees reduces eduction by 0.165.
 
-## Subsectioin (v)
+## Part (v)
 Estimate the model from part (iii) by IV, using ctuit as an IV for educ. How does
 the confidence interval for the return to education compare with the OLS CI from
 part (iii)?
@@ -296,7 +373,7 @@ stargazer(fit_iv4, type = "text", ci = TRUE, ci.level = 0.95)
 
 The confidence interval in the IV method is [0.011, 0.489] which is wider than the one from OLS.
 
-## Subsection (vi)
+## Part (vi)
 Do you think the IV procedure from part (v) is convincing?  
 
 The IV estimate has a large standared error thereby showing that the IV procedure is not convincing. Infact ctuit was found not to correlated with eduction.
