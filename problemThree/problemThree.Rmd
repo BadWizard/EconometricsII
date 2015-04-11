@@ -126,16 +126,8 @@ The model in part(i) does not account for the fact that different people may hav
 ## Subsection (iii)
 The variable e401k is a binary variable equal to one if a worker is eligible to participate in a 401(k) plan. Explain what is required for e401k to be a valid IV for p401k. Do these assumptions seem reasonable?  
 
-Condition 1: e401k has to be correlated with p401k; not surprisingly, this is not an
-issue, as being eligible for a 401(k) plan is, by definition, necessary for participation. (The
-regression in part (iv) verifies that they are strongly positively correlated.) The more difficult
-issue is whether e401k can be taken as exogenous in the structural model. In other words, is
-being eligible for a 401(k) correlated with unobserved taste for saving? If we think workers that
-like to save for retirement will match up with employers that provide vehicles for retirement
-saving, then u and e401k would be positively correlated. Certainly we think that e401k is less
-correlated with u than is p401k. But remember, this alone is not enough to ensure that the IV
-estimator has less asymptotic bias than the OLS estimator; see page 493. 
-
+Condition 1: e401k has to be correlated with p401k. 
+Condition 2: e401k has to be uncorrelated with the unobserved residual error. 
 
 ## Subsection (iv)
 Estimate the reduced form for p401k and verify that e401k has significant partial correlation with p401k. Since the reduced form is also a linear probability model, use a heteroskedasticity-robust standard error.
