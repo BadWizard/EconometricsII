@@ -8,35 +8,46 @@ output: html_document
 # Problem 9.4
 The following equation explains weekly hours of television viewing by a child in terms of the child's age, mother's education, father's education, and number of siblings:
 
-tvhours* 5 b0 1 b1age 1 b2age2 1 b3motheduc 1 b4 fatheduc 1 b5sibs 1 u.
+tvhours* = ??0 + ??1age + ??2age2 + ??3motheduc + ??4fatheduc + ??5sibs + u.
 
 We are worried that tvhours* is measured with error in our survey. Let tvhours denote the reported hours of television viewing per week.
 
 ## Part (i)
 What do the classical errors-in-variables (CEV) assumptions require in this application?
 
+For the CEV assumptions to hold, we must be able to write tvhours = tvhours star + e0, where the measurement error e0 has zero mean and is uncorrelated with tvhours* and each explanatory variable in the equation.
+
+
 ## Part (ii)
 Do you think the CEV assumptions are likely to hold? Explain.
+
+The CEV assumptions are unlikely to hold in this example. For children who do not watch TV at all, tvhours* = 0, and it is very likely that reported TV hours is zero. So if tvhours* = 0 then e0 = 0 with high probability. If tvhours* > 0, the measurement error can be positive or negative, but, since tvhours ??? 0, e0 must satisfy e0 ??? ???tvhours*. So e0 and tvhours* are likely to be correlated. As mentioned in part (i), because it is the dependent variable that is measured with error, what is important is that e0 is uncorrelated with the explanatory variables. But this is unlikely to be the case, because tvhours* depends directly on the explanatory variables. Or, we might argue directly that more highly educated parents tend to underreport how much television their children watch, which means e0 and the education variables are negatively correlated. 
 
 # Problem 15.2
 Suppose that you wish to estimate the effect of class attendance on student performance, as in Example 6.3. A basic model is  
 
-stndfnl 5 b0 1 b1atndrte 1 b2 priGPA 1 b3ACT 1 u,
+stndfnl = ??0 + ??1atndrte + ??2priGPA + ??3ACT + u,
 
 where the variables are defined as in Chapter 6.
 
 ## Part (i)
 Let dist be the distance from the students' living quarters to the lecture hall. Do you think dist is uncorrelated with u?
 
+Yes, it's possible for distance and the error term to be uncorrelated. This is because classrooms are randomly assigned without consideration for where students live. 
+
 ## Part (ii)
 Assuming that dist and u are uncorrelated, what other assumption must dist satisfy to be a valid IV for atndrte?
 
+The other assumption is that distance must be partially correlated with the varibale "atndrte". 
+
 ## Part (iii)
-Suppose, as in equation (6.18), we add the interaction term priGPA?atndrte:
+Suppose, as in equation (6.18), we add the interaction term priGPA.atndrte:
 
-stndfnl = beta0 + beta1atndrte + beta2priGPA + beta3ACT + beta4priGPA.atndrte + u.
+stndfnl = ??0 + ??1atndrte + ??2priGPA + ??3ACT + ??4priGPA.atndrte + u.
 
-If atndrte is correlated with u, then, in general, so is priGPA.atndrte. What might be a good IV for priGPA.atndrte? 
+If atndrte is correlated with u, then, in general, so is priGPA.atndrte. What might be a good IV for priGPA.atndrte?
+
+A good IV for may be the interaction term between GPA and distance, priGPA???dist. 
 
 
 # Problem 15.4
@@ -49,12 +60,17 @@ where MINt is the minimum wage, in real dollars, POPt is the population from 18 
 ## Part (i)
 If we are worried that the state chooses its minimum wage partly based on unobserved (to us) factors that affect youth employment, what is the problem with OLS estimation?
 
+This means that the Minimum wage will be correlated with the unobserved error term thereby making estimates from OLS to be biased and inconsistent. 
+
 ## Part (ii)
 Let USMINt be the U.S. minimum wage, which is also measured in real terms. Do you think gUSMINt is uncorrelated with ut?
 
+The U.S. minimum wage may be uncorrelated with the error term because the Gross Domestic Factor controls for the overall performance of the US economy.
 
 ## Part (iii)
 By law, any state's minimum wage must be at least as large as the U.S. minimum. Explain why this makes gUSMINt a potential IV candidate for gMINt.
+
+This is because the State minimum wage is correlated with the US minimum wage, that is, as the national wage increases so must the State wage. It is also uncorrelated with the disturbance term.
 
 
 # Problem 15.6
@@ -62,17 +78,26 @@ By law, any state's minimum wage must be at least as large as the U.S. minimum. 
 ## Part (i)
 In the model with one endogenous explanatory variable, one exogenous explanatory variable, and one extra exogenous variable, take the reduced form for y2 (15.26), and plug it into the structural equation (15.22). This gives the reduced form for y1:
 
-y1 = alpha0 + alpha1z1 + alpha2z2 + v1.
+y1 = ??0 + ??1z1 + ??2z2 + v1.
 
-Find the aj in terms of the betaj  and the pij.
+Find the ??j in terms of the ??j  and the ??j.
+
+y1 = ??0 + ??1(??0 + ??1z1 + ??2z2 + v2) + ??2z1 + u1
+y1 = (??0 + ??1??0) + (??1??1 + ??2)z1 + ??1??2z2 + u1 + ??1v2, hence
+   
+??0 = ??0 + ??1??0, 
+??1 = ??1??1 + ??2, and 
+??2 = ??1??2.
 
 ## Part (ii)
 Find the reduced form error, v1, in terms of u1, v2, and the parameters.
 
+v1 = u1 + ??1v2. 
+
 ## Part (iii)
-How would you consistently estimate the aj?
+How would you consistently estimate the ??j?
 
-
+v1 has zero mean and is uncorrelated with z1 and z2, which means that OLS consistently estimates the ??j.
 
 
 # Problem C15.3
@@ -81,7 +106,7 @@ Use the data in CARD.RAW for this exercise.
 ## Part (i)
 The equation we estimated in Example 15.4 can be written as  
 
-log(wage) = beta0 + beta1educ + beta2exper + ... + u,
+log(wage) = ??0 + ??1educ + ??2exper + ... + u,
 
 where the other explanatory variables are listed in Table 15.1. In order for IV to be consistent, the IV for educ, nearc4, must be uncorrelated with u. Could nearc4 be correlated with things in the error term, such as unobserved ability? Explain.  
 
@@ -219,7 +244,7 @@ coeftest(fit_lm2, vcov = vcovHC)
 Eligibility for 401k is statistically significant correlated with the propbability of having a 401k at a 0.01 level of confidence.
 
 ## Part (v)
-Now, estimate the structural equation by IV and compare the estimate of beta1 with the OLS estimate. Again, you should obtain heteroskedasticity-robust standard errors.
+Now, estimate the structural equation by IV and compare the estimate of ??1 with the OLS estimate. Again, you should obtain heteroskedasticity-robust standard errors.
 ```{r}
 # Estimate the structural equation by IV
 formula2 <- pira ~ p401k + inc + incsq + age + agesq
@@ -252,7 +277,7 @@ The purpose of this exercise is to compare the estimates and standard errors obt
 ## Part (i)
 Use a 2SLS routine to estimate the equation  
 
-log(wage) = beta0 + beta1educ + beta2exper + beta3tenure + beta4black + u,  
+log(wage) = ??0 + ??1educ + ??2exper + ??3tenure + ??4black + u,  
 
 where sibs is the IV for educ. Report the results in the usual form.
 ```{r}
@@ -268,7 +293,7 @@ stargazer(fit_iv3, type = "text")
 
 
 ## Part (ii)
-Now, manually carry out 2SLS. That is, first regress educ on sibs, exper, tenure, and black and obtain the fitted values. Then, run the second stage regression log(wage) on educ estimate, exper, tenure, and black. Verify that the estimate beta coefficients are identical to those obtained from part (i), but that the standard errors are somewhat different. The standard errors obtained from the second stage regression when manually carrying out 2SLS are generally inappropriate.
+Now, manually carry out 2SLS. That is, first regress educ on sibs, exper, tenure, and black and obtain the fitted values. Then, run the second stage regression log(wage) on educ estimate, exper, tenure, and black. Verify that the estimate ?? coefficients are identical to those obtained from part (i), but that the standard errors are somewhat different. The standard errors obtained from the second stage regression when manually carrying out 2SLS are generally inappropriate.
 ```{r}
 # First regression
 fit_lm4 <- lm(educ ~ sibs + exper + tenure + black, data = wage_data)
@@ -287,7 +312,7 @@ The standard errors in part(i) and part(ii) are 0.034 and 0.035 respectively.
 
 ## Part (iii)
 Now, use the following two-step procedure, which generally yields inconsistent
-parameter estimates of the betaj, and not just inconsistent standard errors. In step one, regress educ on sibs only and obtain the fitted values, say educ estimated. (Note that this is an incorrect first stage regression.) Then, in the second step, run the regression of log(wage) on educ_estimated, , experi
+parameter estimates of the ??j, and not just inconsistent standard errors. In step one, regress educ on sibs only and obtain the fitted values, say educ estimated. (Note that this is an incorrect first stage regression.) Then, in the second step, run the regression of log(wage) on educ_estimated, , experi
 , tenure, and black. How does the estimate from this incorrect, two-step procedure compare with the correct 2SLS estimate of the return to education?
 
 ```{r}
