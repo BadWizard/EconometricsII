@@ -1,0 +1,66 @@
+---
+title: "problemFour"
+author: "Daniel"
+date: "April 16, 2015"
+output: html_document
+---
+
+# Problem 17.6
+Consider a family saving function for the population of all families in the United States:  
+sav = beta 1inc  2hhsize  3educ  4age  u,
+
+where hhsize is household size, educ is years of education of the household head, and age
+is age of the household head. Assume that E(uinc,hhsize,educ,age)  0.
+
+## Part (i)
+Suppose that the sample includes only families whose head is over 25 years old. If
+we use OLS on such a sample, do we get unbiased estimators of the j
+? Explain.
+
+## Part (ii)
+Now, suppose our sample includes only married couples without children. Can we
+estimate all of the parameters in the saving equation? Which ones can we estimate?
+
+
+## Part (iii)
+Suppose we exclude from our sample families that save more than $25,000 per year.
+Does OLS produce consistent estimators of the j
+?
+
+# Problem 17.7
+Suppose you are hired by a university to study the factors that determine whether students admitted to the university actually come to the university. You are given a large random sample of students who were admitted the previous year. You have information on whether each student chose to attend, high school performance, family income, financial aid offered, race, and geographic variables. Someone says to you, “Any analysis of that data will lead to biased results because it is not a random sample of all college applicants, but only those who apply to this university.” What do you think of this criticism?
+
+
+
+# Problem C17.7
+Use the MROZ.RAW data for this exercise.
+
+## Part (i)
+Using the 428 women who were in the workforce, estimate the return to education by OLS including exper, exper2, nwifeinc, age, kidslt6, and kidsge6 as explanatory variables. Report your estimate on educ and its standard error.  
+
+## Part (ii)
+Now, estimate the return to education by Heckit, where all exogenous variables show up in the second-stage regression. In other words, the regression is log(wage) on educ, exper, exper2, nwifeinc, age, kidslt6, kidsge6, and estimated lambda. Compare the estimated return to education and its standard error to that from part (i).
+
+## Part (iii)
+Using only the 428 observations for working women, regress estimated lambda on educ, exper, exper2, nwifeinc, age, kidslt6, and kidsge6. How big is the R-squared? How does this help explain your findings from part (ii)? (Hint: Think multicollinearity.)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
