@@ -7,42 +7,69 @@ output: html_document
 
 # Problem 17.6
 Consider a family saving function for the population of all families in the United States:  
-sav = beta 1inc  2hhsize  3educ  4age  u,
+sav = beta0 + beta1inc + hhsize + beta3educ + beta4age + u,
 
-where hhsize is household size, educ is years of education of the household head, and age
-is age of the household head. Assume that E(uinc,hhsize,educ,age)  0.
+where hhsize is household size, educ is years of education of the household head, and age is age of the household head. Assume that E(u|inc,hhsize,educ,age) =  0.
 
 ## Part (i)
-Suppose that the sample includes only families whose head is over 25 years old. If
-we use OLS on such a sample, do we get unbiased estimators of the j
-? Explain.
+Suppose that the sample includes only families whose head is over 25 years old. If we use OLS on such a sample, do we get unbiased estimators of the betaj? Explain.
+
+OLS will be unbiased, because we are choosing the sample on the basis of an exogenous
+explanatory variable. The population regression function for sav is the same as the regression
+function in the subpopulation with age > 25. 
 
 ## Part (ii)
-Now, suppose our sample includes only married couples without children. Can we
-estimate all of the parameters in the saving equation? Which ones can we estimate?
+Now, suppose our sample includes only married couples without children. Can we estimate all of the parameters in the saving equation? Which ones can we estimate?
 
+Assuming that marital status and number of children affect sav only through household size (hhsize), this is another example of exogenous sample selection. But, in the subpopulation of married people without children, hhsize = 2. Because there is no variation in hhsize in the subpopulation, we would not be able to estimate β2; effectively, the intercept in the subpopulation becomes β0 + 2β2, and that is all we can estimate. But, assuming there is variation in inc, educ, and age among married people without children (and that we have a sufficiently varied sample from this subpopulation), we can still estimate β1, β3, and β4.
 
 ## Part (iii)
-Suppose we exclude from our sample families that save more than $25,000 per year.
-Does OLS produce consistent estimators of the j
-?
+Suppose we exclude from our sample families that save more than $25,000 per year. Does OLS produce consistent estimators of the betaj?
+
+This would be selecting the sample on the basis of the dependent variable, which causes OLS to be biased and inconsistent for estimating the βj in the population model. We should instead use a truncated regression model. 
 
 # Problem 17.7
 Suppose you are hired by a university to study the factors that determine whether students admitted to the university actually come to the university. You are given a large random sample of students who were admitted the previous year. You have information on whether each student chose to attend, high school performance, family income, financial aid offered, race, and geographic variables. Someone says to you, “Any analysis of that data will lead to biased results because it is not a random sample of all college applicants, but only those who apply to this university.” What do you think of this criticism?
 
-
+For the immediate purpose of finding out the variables that determine whether accepted
+applicants choose to enroll, there is not a sample selection problem. The population of interest is applicants accepted by the particular university. Therefore, it is perfectly appropriate to specify a model for this group, probably a linear probability model, a probit model, or a logit model. OLS or maximum likelihood estimation will produce consistent, asymptotically normal estimators. This is a good example of where many data analysts’ knee-jerk reaction might be to conclude that there is a sample selection problem, which is why it is important to be very precise about the purpose of the analysis, including stating the population of interest.  
+ 
+If the university is hoping the pool of applicants changes in the near future, then there is a
+sample selection problem: the current students that apply may be systematically different from
+students that may apply in the future. As the nature of the pool of applicants is unlikely to
+change dramatically over one year, the sample selection problem can be mitigated, if not entirely eliminated, by updating the analysis after each first-year class has enrolled. 
 
 # Problem C17.7
 Use the MROZ.RAW data for this exercise.
 
 ## Part (i)
-Using the 428 women who were in the workforce, estimate the return to education by OLS including exper, exper2, nwifeinc, age, kidslt6, and kidsge6 as explanatory variables. Report your estimate on educ and its standard error.  
+Using the 428 women who were in the workforce, estimate the return to education by OLS including exper, exper2, nwifeinc, age, kidslt6, and kidsge6 as explanatory variables. Report your estimate on educ and its standard error.
+```{r}
+# Read the data into R
+
+
+
+```
+
+The coefficient and standard error on educ are .0999 (se = .0151). 
 
 ## Part (ii)
 Now, estimate the return to education by Heckit, where all exogenous variables show up in the second-stage regression. In other words, the regression is log(wage) on educ, exper, exper2, nwifeinc, age, kidslt6, kidsge6, and estimated lambda. Compare the estimated return to education and its standard error to that from part (i).
+```{r}
+
+
+```
+
+The Heckit coefficient on educ is .1187 (se = .0341), where the standard error is just the usual OLS standard error. The estimated return to education is somewhat larger than without the Heckit corrections, but the Heckit standard error is over twice as large. 
 
 ## Part (iii)
 Using only the 428 observations for working women, regress estimated lambda on educ, exper, exper2, nwifeinc, age, kidslt6, and kidsge6. How big is the R-squared? How does this help explain your findings from part (ii)? (Hint: Think multicollinearity.)
+```{r}
+
+
+```
+
+The estimation produces R2 ≈ .962, which means that there is substantial multicollinearity among the regressors in the second stage regression. This is what leads to the large standard errors. Without an exclusion restriction in the log(wage) equation, estimated λ is almost a linear function of the other explanatory variables in the sample. 
 
 
 
