@@ -46,31 +46,50 @@ Use the MROZ.RAW data for this exercise.
 Using the 428 women who were in the workforce, estimate the return to education by OLS including exper, exper2, nwifeinc, age, kidslt6, and kidsge6 as explanatory variables. Report your estimate on educ and its standard error.
 ```{r}
 # Read the data into R
+library(haven)
+w_data <- read_dta("MROZ.dta")
 
+# Estimate the return to education by OLS
+fit_lm <- lm(lwage ~ educ + exper + expersq + nwifeinc + age + kidslt6 + kidsge6, data = w_data)
 
-
+# Tabulate the model results
+library(stargazer)
+stargazer(fit_lm, type = "text", title = "Return to Education for Working Women")
 ```
 
-The coefficient and standard error on educ are .0999 (se = .0151). 
+The coefficient and standard error on educ are 0.1 and 0.015 respectively. 
 
 ## Part (ii)
 Now, estimate the return to education by Heckit, where all exogenous variables show up in the second-stage regression. In other words, the regression is log(wage) on educ, exper, exper2, nwifeinc, age, kidslt6, kidsge6, and estimated lambda. Compare the estimated return to education and its standard error to that from part (i).
 ```{r}
+# Estimate a model by Heckit method
+library(sampleSelection)
 
+fit_hkt <- heckit(selection = inlf ~ educ + exper + expersq + nwifeinc + age + kidslt6 + kidsge6, 
+                  outcome = lwage ~ educ + exper + expersq + nwifeinc + age + kidslt6 + kidsge6,
+                  method = "2step", data = w_data) 
 
+# Display the results
+summary(fit_hkt)
 ```
 
-The Heckit coefficient on educ is .1187 (se = .0341), where the standard error is just the usual OLS standard error. The estimated return to education is somewhat larger than without the Heckit corrections, but the Heckit standard error is over twice as large. 
+The estimated return to education is 11.9%, (Coefficient = 0.1187 and Standard Error = 0.034). The estimated return to education is larger than without the Heckit corrections, but the Heckit standard error is more than two times larger. 
 
 ## Part (iii)
 Using only the 428 observations for working women, regress estimated lambda on educ, exper, exper2, nwifeinc, age, kidslt6, and kidsge6. How big is the R-squared? How does this help explain your findings from part (ii)? (Hint: Think multicollinearity.)
 ```{r}
+# Obtain the residuals 
+lambda <- na.omit (resid(fit_hkt))
 
+# Regress estimated lambda
+x <- na.omit(w_data)
+fit_lm2 <- lm(lambda ~ x$educ + x$exper + x$expersq + x$nwifeinc + x$age + x$kidslt6 + x$kidsge6)
 
+# Show the model results
+summary(fit_lm2)
 ```
 
-The estimation produces R2 ≈ .962, which means that there is substantial multicollinearity among the regressors in the second stage regression. This is what leads to the large standard errors. Without an exclusion restriction in the log(wage) equation, estimated λ is almost a linear function of the other explanatory variables in the sample. 
-
+The model produces a high R squared value of 0.962. This shows that there is multicollinearity among the regressors in the second stage regression, which led to the large standard errors in part (ii).
 
 
 
