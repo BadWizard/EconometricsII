@@ -1,0 +1,225 @@
+---
+title: "chapterThirteen"
+author: "Daniel"
+date: "May 11, 2015"
+output: word_document
+---
+
+# Problem 13.5
+Suppose that we want to estimate the effect of several variables on annual saving and that
+we have a panel data set on individuals collected on January 31, 1990, and January 31,
+1992. If we include a year dummy for 1992 and use first differencing, can we also include
+age in the original model? Explain.
+
+No, we cannot include age as an explanatory variable in the original model. Each person in
+the panel data set is exactly two years older on January 31, 1992. Therefore when we use first differencing, the explanatory variable is constant which violates the multicollinearlity assumption required for estimating the coefficients using Pooled OLS.  
+
+# Problem C13.7
+Use GPA3.RAW for this exercise. The data set is for 366 student-athletes from a large
+university for fall and spring semesters. [A similar analysis is in Maloney and McCormick
+(1993), but here we use a true panel data set.] Because you have two terms of data for each
+student, an unobserved effects model is appropriate. The primary question of interest is this: Do athletes perform more poorly in school during the semester their sport is in season?
+
+## Part (i)
+Use pooled OLS to estimate a model with term GPA (trmgpa) as the dependent
+variable. The explanatory variables are spring, sat, hsperc, female, black, white,
+frstsem, tothrs, crsgpa, and season. Interpret the coefficient on season. Is it statistically
+significant?  
+```{r}
+# Start by reading the data into R
+library(haven)
+gpa_data <- read_dta("GPA3.dta")
+
+# Create a panel dataset
+library(plm)
+pdata <- plm.data(gpa_data, index = c("term", "id"))
+
+# Use pooled OLS to estimate the model
+gpa_pool <- plm(trmgpa ~ spring + sat + hsperc + female + black + white + frstsem + tothrs + crsgpa + season, data = pdata, model = "pooling")
+
+# Display the results
+summary(gpa_pool)
+```
+
+The coefficient on season implies that, other things fixed, an athlete’s term GPA is about 0.027 points lower when his/her sport is in season. 
+
+
+## Part (ii)
+Most of the athletes who play their sport only in the fall are football players. Suppose
+the ability levels of football players differ systematically from those of other
+athletes. If ability is not adequately captured by SAT score and high school percentile,
+explain why the pooled OLS estimators will be biased.  
+
+If omitted ability is correlated with season then OLS is biased and inconsistent.    
+
+## Part (iii)
+Now, use the data differenced across the two terms. Which variables drop out?
+Now, test for an in-season effect. 
+```{r}
+# Use first differencing
+gpa_fd <- plm(trmgpa ~ spring + sat + hsperc + female + black + white + frstsem + tothrs + crsgpa + season, data = pdata, model = "fd", effect = "individual")
+
+# Display the results
+summary(gpa_fd)
+```
+
+The variables spring drop outs. 
+
+## Part (iv)
+Can you think of one or more potentially important, time-varying variables that
+have been omitted from the analysis?   
+
+One possibility is a measure of course load. If some fraction of student-athletes take a
+lighter load during the season, then term GPAs may tend to be higher, other things equal. 
+
+# Problem 13.10
+For this exercise, we use JTRAIN.RAW to determine the effect of the job training grant
+on hours of job training per employee. 
+
+## Part (i)
+Estimate the equation using first differencing. How many firms are used in the estimation?
+How many total observations would be used if each firm had data on all variables (in particular, hrsemp) for all three time periods?
+```{r}
+# Start by reading the data in R
+train_data <- read_dta("JTRAIN.dta")
+
+# Create a panel dataset
+jdata <- plm.data(train_data, indexes = c("year", "fcode"))
+
+# Estimate the equation using first differencing
+j_fd <- plm(hrsemp ~ d88 + d89 + grant + grant_1 + lemploy, data = jdata, model = "fd")
+
+# Display the results
+summary(j_fd)
+```
+
+There are 124 firms with both years of data and three firms with only one year of data used, for a total of 127 firms; 30 firms in the sample have missing information in both years and are not used at all. If we had information for all 157 firms, we would have 314 total observations in estimating the equation. 
+
+
+## Part (ii)
+Interpret the coefficient on grant and comment on its significance.  
+
+The coefficient means that if a firm received a grant for the current year, it trained each worker an average of 16.6 hours more than it would have otherwise. 
+
+## Part (iii)
+Is it surprising that grant21 is insignificant? Explain.  
+
+Since a grant last year was used to pay for training last year, it is perhaps not surprising
+that the grant does not carry over into more training this year.  
+
+## Part (iv)
+Do larger firms train their employees more or less, on average? How big are the
+differences in training?  
+
+The coefficient on the employees variable is not small: a 1% increase in employ
+decreases hours per employee by only 4.26 hrs
+
+# Problem C14.2
+Use CRIME4.RAW for this exercise.  
+
+## Part (i)
+Reestimate the unobserved effects model for crime in Example 13.9 but use fixed
+effects rather than differencing. Are there any notable sign or magnitude changes
+in the coefficients? What about statistical significance?  
+```{r}
+# Start by reading the data into R
+crime_data <- read_dta("CRIME4.dta")
+
+# Create a panel data frame
+c_data <- plm.data(crime_data, indexes = c("year", "county"))
+
+# Estimate the unobserved effects model
+c_fe <- plm(lcrmrte ~ d83 + d84 + d85 + d86 + d87 + lprbarr + lprbconv + lprbpris + lavgsen + lpolpc, data = c_data, model = "within")
+
+# Display the results
+summary(c_fe)
+```
+
+There is no intercept because it gets swept away in the time demeaning. The first-difference and fixed effects slope estimates are broadly consistent. The variables that are significant with first differencing are significant in the FE estimation, and the signs are all the same.
+
+## Part (ii)
+Add the logs of each wage variable in the data set and estimate the model by fixed
+effects. How does including these variables affect the coefficients on the criminal
+justice variables in part (i)?  
+
+When the nine log wage variables are added and the equation is estimated by fixed effects, very little of importance changes on the criminal justice variables. 
+
+
+## Part (iii)
+Do the wage variables in part (ii) all have the expected sign? Explain. Are they
+jointly significant? 
+
+Yes, the wage variables are jointly significant.
+
+
+# Problem C14.4
+In Example 13.8, we used the unemployment claims data from Papke (1994) to estimate
+the effect of enterprise zones on unemployment claims. Papke also uses a model that
+allows each city to have its own time trend:  
+
+## Part (i)
+Show that, when the previous equation is first differenced, we obtain;
+
+Write the equation for times t and t – 1 as
+ log(uclmsit) = ai + cit + β1ezit + uit,
+ log(uclmsi,t-1) = ai + ci(t – 1) + β1ezi,t-1 + ui,t-1
+
+
+## Part (ii)
+Estimate the differenced equation by fixed effects. What is the estimate of ez?
+Is it very different from the estimate obtained in Example 13.8? Is the effect of
+enterprise zones still statistically significant?  
+```{r}
+# Start by reading the data into R
+employ_data <- read_dta("EZUNEM.dta")
+
+# Create a panel data frame
+e_data <- plm.data(employ_data, indexes = c("year", "city"))
+
+# Estimate the differenced equation
+e_fe <- plm(luclms ~ d82+ d83 + d84 + d85 + d86 + d87+ d88 + ez, data = e_data, model = "within")
+
+# Display the results
+summary(e_fe)
+```
+
+The estimated effect of an EZ is small and not statistically significant. 
+
+
+## Part (iii)
+Add a full set of year dummies to the estimation in part (ii). What happens to the
+estimate of ez1?
+```{r}
+# Estimate the differenced equation using a full set of year dummies
+e_fe2 <- plm(luclms ~ d81:d88 + ez, data = e_data, model = "within")
+
+# Display the results
+summary(e_fe2)
+```
+
+There is no difference.
+
+# Problem C14.6
+Add the interaction term unionitt to the equation estimated in Table 14.2 to see if wage
+growth depends on union status. Estimate the equation by random and fixed effects and
+compare the results.
+```{r}
+# Start by reading the data into R
+wagePan_data <- read_dta("WAGEPAN.dta")
+
+# Create a panel data frame
+w_data <- plm.data(wagePan_data, indexes = c("year", "nr"))
+
+# Estimate the equation by random effects
+wageRE <- plm(lwage ~ educ + black + hisp + exper + expersq + married + union + union, data = w_data, method = "random", random.method = "walhus")
+
+# Estimate the equation by Fixed effects
+wageFE <- plm(lwage ~ educ + black + hisp + exper + expersq + married + union + union, data = w_data, method = "within")
+
+# Display the resutls
+summary(wageRE)
+summary(wageFE)
+
+```
+
+They appear to be the same.

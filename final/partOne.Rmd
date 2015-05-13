@@ -1,0 +1,247 @@
+---
+title: "partTwo"
+author: "Daniel"
+date: "May 12, 2015"
+output: html_document
+---
+```{r}
+# Start by loading all required packages into the workspace
+library(haven) ## for reading stata data into R
+library(plm) ## for panel linear modeling
+library(stargazer) ## for tabulating model results
+library(dplyr) ## for data manupulation
+library(wfe) ## for difference-in-difference estimation
+library(sandwich) ## for Robust Standard Errors
+```
+
+# Problem 1
+Replicate Table 3 of Keller and Levinson 
+```{r}
+# Read the data into R
+kl_data <- read_dta("KL.dta")
+
+# Create a Panel data frame
+kl_panel <- plm.data(kl_data, indexes = c("state", "t"))
+
+# Estimated a pooled OLS model for manufacturing
+m_pool <- plm(ppetot ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te) + as.factor(t), data = kl_panel, model = "pooling")
+
+# Estimated a pooled OLS model for chemicals
+c_pool <- plm(ppecap ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te) + as.factor(t), data = kl_panel, model = "pooling")
+
+# Estimated a Fixed Effects model for manufacturing
+m_fe <- plm(ppetot ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te) + as.factor(t), data = kl_panel, model = "within")
+
+# Estimated a Fixed Effects model for chemicals
+c_fe <- plm(ppecap ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te) + as.factor(t), data = kl_panel, model = "within")
+
+# Display the results
+stargazer(m_pool, c_pool, m_fe, c_fe, type = "text", title = "FDI AND ABATMENT COSTS, 1977-1994", column.labels = c("Manufacturing", "Chemicals", "Manufacturing", "Chemicals"))
+```
+
+# Problem 2
+Re-estimate the pooled OLS models in Table 3, columns (2) and (3), omitting the year dummies. Do the results change?
+```{r}
+# Estimated a pooled OLS model for manufacturing without year dummies
+m_pool2 <- plm(ppetot ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te), data = kl_panel, model = "pooling")
+
+# Estimated a pooled OLS model for chemicals without year dummies
+c_pool2 <- plm(ppecap ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te), data = kl_panel, model = "pooling")
+
+# Display the results
+stargazer(m_pool2, c_pool2, type = "text", title = "FDI AND ABATMENT COSTS, 1977-1994: without Year dummies", column.labels = c("Manufacturing", "Chemicals"))
+```
+
+The results change only for Manufacturing and remain the same for Chemical
+
+# Problem 3
+Re-estimate the models in Table 3, columns (4) and (5), except treat the state effects as random instead of fixed. Do the results change? Perform a Hausman test. Do you prefer the fixed or random effects specification?
+```{r}
+# Estimated a Fixed Effects model for manufacturing
+m_re <- plm(ppetot ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te) + as.factor(t), data = kl_panel, model = "random")
+
+# Estimated a Fixed Effects model for chemicals
+c_re <- plm(ppecap ~ log(index) + log(mt) + log(pn) + un + ur + log(wg) + log(mt) + log(lv) + log(ep) + log(te) + as.factor(t), data = kl_panel, model = "random")
+
+# Display the results
+stargazer(m_re, c_re, type = "text", title = "FDI AND ABATMENT COSTS, 1977-1994: State Random Effects", column.labels = c("Manufacturing", "Chemicals"))
+
+# Conduct a Hausman test
+phtest(m_fe, m_re)
+phtest(c_fe, c_re)
+```
+
+The results are different. I prefer the Random-effects as they are more efficient than the fixed-effects
+
+# Problem 4
+Estimate the impact of participating in the school breakfast program three different ways: (i) using a cross-section estimator (i.e., use all children in period two only), (ii) using a time-series type estimator (i.e., use both periods of data for participants only), and (iii) using a difference-in-differences estimator. Do not include any other regressors in the model. How do the results compare? For each of the three estimators, explain what assumption is being made in order for the estimator to yield an unbiased estimate of the treatment effect.
+```{r}
+# Start by reading the data into R
+sbp_data <- read_dta("SBP.dta")
+
+# Create a panel data frame
+sbp_panel <- plm.data(sbp_data, indexes = c("t", "childid"))
+
+# Estimate a cross-section estimator for all children in period two only
+data1 <- filter(sbp_panel, t == 2)
+sbp_lm <- lm(bmi ~ as.factor(treat), data = (data1))
+
+# Display the resullts
+stargazer(sbp_lm, type = "text", title = "Cross-section Estimators without other Regressors")
+
+# Estimate a time series type estimator
+sbp_ts <- lm(bmi ~ as.factor(treat), data = sbp_panel)
+
+# Display the resullts
+stargazer(sbp_ts, type = "text", title = "Time Series Estimators without other Regressors")
+
+# Estimate a difference-in-difference estimator
+sbp_did <- wfe(bmi ~ as.factor(treat), data = sbp_panel, treat = "treat", time.index = "t", estimator = "did", unit.index = "childid")
+
+# Display the resullts
+stargazer(sbp_did, type = "text", title = "Difference-in-Difference Estimators without other Regressors")
+```
+
+# Problem 5
+Re-do question 4, this time adding the other regressors available to the three models. The controls are dummies for race, income, income squared, birthweight, dummy variables for region of the US, and dummy variables for rural/urban environment. Note: for each of these variables, there is an omitted category for which there is no variable in the data set, so you can include all the variables in the data set in the models. Again, how do the results compare?
+
+```{r}
+# Estimate a cross-section estimator for all children in period two only
+# With all the regressors
+sbp_lm2 <- lm(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = (data1))
+
+# Display the resullts
+stargazer(sbp_lm2, type = "text", title = "Cross-section Estimators: All Regressors")
+
+# Estimate a time series type estimator
+# With all the regressors
+sbp_ts2 <- lm(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel)
+
+# Display the resullts
+stargazer(sbp_ts2, type = "text", title = "Time Series Estimators: All Regressors")
+
+# Estimate a difference-in-difference estimator
+# With all the regressors
+sbp_did2 <- wfe(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel, treat = "treat", time.index = "t", estimator = "did", unit.index = "childid")
+
+# Display the resullts
+stargazer(sbp_did2, type = "text", title = "Difference-in-Difference Estimators: All Regressors")
+```
+
+# Problem 6
+Which of the preceding estimates do you find most plausible? What does it imply about the effectiveness of the program?
+
+I find the Difference-in-Difference most plausbile. It shows that there is a decrease in bmi due to the feeding program.
+
+# Problem 7
+Generate a dummy variable, obese, equal to one if BMI > 30 and zero otherwise. Re-estimate the models from question 5 (use OLS with robust standard errors to account for the heteroskedasticity ... recall this is a linear probability model), and discuss the results.
+```{r}
+# Create a dummy variable called obese
+sbp_data$obese <- ifelse(sbp_data$bmi > 30, 1, 0)
+
+# Create a panel data frame
+sbp_panel <- plm.data(sbp_data, indexes = c("t", "childid"))
+
+# Re-estimate a cross-section estimator for all children in period two only
+# With all the regressors
+data2 <- filter(sbp_panel, t == 2)
+sbp_lm3 <- lm(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = (data2))
+
+# Display the resullts
+stargazer(sbp_lm3, type = "text", title = "Cross-section Estimators: Robust Standard Errors")
+
+# Estimate a time series type estimator
+# With all the regressors
+sbp_ts2 <- lm(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel)
+
+# Display the resullts
+stargazer(sbp_ts2, type = "text", title = "Time Series Estimators: All Regressors")
+
+# Estimate a difference-in-difference estimator
+# With all the regressors
+sbp_did2 <- wfe(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel, treat = "treat", time.index = "t", estimator = "did", unit.index = "childid")
+
+# Display the resullts
+stargazer(sbp_did2, type = "text", title = "Difference-in-Difference Estimators: All Regressors")
+
+```
+
+# Problem 8
+Regress a state's level of environmental regulation on all the state's own characteristics and the average level of environmental regulation in neighboring states. Use pooled OLS with a linear time trend and then with time dummies. Test the restrictions imposed by the linear time trend model using an F-test (think back to ECO 770). What is the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation?
+
+# Problem 9
+Re-estimate the model in question 8 using fixed effects and random effects, and conduct a Hausman test. Include time dummies in both models. Do you prefer the fixed or random effects specification? What is the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation in your preferred model?
+
+# Problem 10
+One concern is that neighboring environmental stringency is endogenous (e.g., unobservable characteristics of regions are affecting the stringency of environmental regulation of all states in close proximity). Regress a state's level of environmental regulation on all the state's own characteristics, time dummies, and the average level of environmental regulation in neighboring states, treating neighboring regulations as endogenous. Use the average value of the other (non-environmental) neighboring state characteristics as instruments. Now, what is the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation?
+
+
+# Problem 11
+Finally, re-do the model in question 10, but add state dummies to the model as well. What is
+the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation? What do you conclude about the importance of controlling for state effects even in the two-stage least squares model?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
