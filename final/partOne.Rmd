@@ -12,6 +12,8 @@ library(stargazer) ## for tabulating model results
 library(dplyr) ## for data manupulation
 library(wfe) ## for difference-in-difference estimation
 library(sandwich) ## for Robust Standard Errors
+library(lmtest) ## for displaying results or RSE
+library(AER) ## for iv regression
 ```
 
 # Problem 1
@@ -148,38 +150,113 @@ data2 <- filter(sbp_panel2, t == 2)
 sbp_lm3 <- lm(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = (data2))
 
 # Display the resullts
-stargazer(sbp_lm3, type = "text", title = "Cross-section Estimators: Robust Standard Errors")
+coeftest(sbp_lm3, vcov = vcovHC) ## Robust Standared Error Testing
 
-# Estimate a time series type estimator
+# Re-stimate a time series type estimator
 # With all the regressors
-sbp_ts2 <- lm(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel)
+sbp_ts3 <- lm(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel)
 
 # Display the resullts
-stargazer(sbp_ts2, type = "text", title = "Time Series Estimators: Robust Standard Errors")
+coeftest(sbp_ts3, vcov = vcovHC) ## Robust Standared Error Testing
 
-# Estimate a difference-in-difference estimator
+# Re-estimate a difference-in-difference estimator
 # With all the regressors
-sbp_did2 <- wfe(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel, treat = "treat", time.index = "t", estimator = "did", unit.index = "childid")
+sbp_did3 <- wfe(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel, treat = "treat", time.index = "t", estimator = "did", unit.index = "childid")
 
 # Display the resullts
-stargazer(sbp_did2, type = "text", title = "Difference-in-Difference Estimators: Robust Standard Errors")
+coeftest(sbp_did3, vcov = vcovHC) ## Robust Standared Error Testing
 
 ```
 
 # Problem 8
-Regress a state's level of environmental regulation on all the state's own characteristics and the average level of environmental regulation in neighboring states. Use pooled OLS with a linear time trend and then with time dummies. Test the restrictions imposed by the linear time trend model using an F-test (think back to ECO 770). What is the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation?
+Regress a state's level of environmental regulation on all the state's own characteristics and the average level of environmental regulation in neighboring states. Use pooled OLS with a linear time trend and then with time dummies. Test the restrictions imposed by the linear time trend model using an F-test. What is the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation?
+```{r}
+# Start by reading the data into R
+jue_data <- read_dta("JUE.dta")
+
+# Create year dummy variables
+jue_data$d77 <- ifelse(jue_data$t == 77, 1, 0)
+jue_data$d78 <- ifelse(jue_data$t == 78, 1, 0)
+jue_data$d79 <- ifelse(jue_data$t == 79, 1, 0)
+jue_data$d80 <- ifelse(jue_data$t == 80, 1, 0)
+jue_data$d81 <- ifelse(jue_data$t == 81, 1, 0)
+jue_data$d82 <- ifelse(jue_data$t == 82, 1, 0)
+jue_data$d83 <- ifelse(jue_data$t == 83, 1, 0)
+jue_data$d84 <- ifelse(jue_data$t == 84, 1, 0)
+jue_data$d85 <- ifelse(jue_data$t == 85, 1, 0)
+jue_data$d86 <- ifelse(jue_data$t == 86, 1, 0)
+jue_data$d88 <- ifelse(jue_data$t == 88, 1, 0)
+jue_data$d89 <- ifelse(jue_data$t == 89, 1, 0)
+jue_data$d90 <- ifelse(jue_data$t == 90, 1, 0)
+jue_data$d91 <- ifelse(jue_data$t == 91, 1, 0)
+jue_data$d92 <- ifelse(jue_data$t == 92, 1, 0)
+jue_data$d93 <- ifelse(jue_data$t == 93, 1, 0)
+jue_data$d94 <- ifelse(jue_data$t == 94, 1, 0)
+
+# Create a panle data frame
+jue_panel <- plm.data(jue_data, indexes = c("sid", "t"))
+
+# Estimate a Pooled OLS
+jue_pool <- plm(index ~ I(t) + pc + pcc + pop + popd + urb + bindex + bpc + bpcc + bpop + bpopd + burb, data = jue_panel, model = "pooling")
+
+summary(jue_pool)
+
+# Re-estimate a pooled OLS with time dummies
+jue_pool2 <- plm(index ~ d77 + d78 + d79 + d80 + d81 + d82 + d83 + d84 + d85 + d86 + d88 + d89 + d90 + d91 + d92 + d93 + d94 + pc + pcc + pop + popd + urb + bindex + bpc + bpcc + bpop + bpopd + burb, data = jue_panel, model = "pooling")
+
+summary(jue_pool2)
+
+# Test the restrictions imposed by the 
+# linear time trend model using an F-test
+pFtest(jue_pool, jue_pool2)
+```
+
+A unit increase in environmental stringency in neighboring states increases the state's own level by 0.5 units.
 
 # Problem 9
 Re-estimate the model in question 8 using fixed effects and random effects, and conduct a Hausman test. Include time dummies in both models. Do you prefer the fixed or random effects specification? What is the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation in your preferred model?
+```{r}
+# Re-estimate a Fixed Effects model with time dummies
+jue_fe <- plm(index ~ d78 + d79 + d80 + d81 + d82 + d83 + d84 + d85 + d86 + d88 + d89 + d90 + d91 + d92 + d93 + d94 + pc + pcc + pop + popd + urb + bindex + bpc + bpcc + bpop + bpopd + burb, data = jue_panel, model = "within")
+
+# Re-estimate a Random Effects model with time dummies
+jue_re <- plm(index ~ d78 + d79 + d80 + d81 + d82 + d83 + d84 + d85 + d86 + d88 + d89 + d90 + d91 + d92 + d93 + d94 + pc + pcc + pop + popd + urb + bindex + bpc + bpcc + bpop + bpopd + burb, data = jue_panel, model = "random")
+
+# Display the results
+summary(jue_fe)
+Summary(jue_re)
+
+# Conduct a Hausman test
+phtest(jue_fe, jue_re)
+```
+
+I prefer the Random-effects as they are more efficient than the fixed-effects
 
 # Problem 10
 One concern is that neighboring environmental stringency is endogenous (e.g., unobservable characteristics of regions are affecting the stringency of environmental regulation of all states in close proximity). Regress a state's level of environmental regulation on all the state's own characteristics, time dummies, and the average level of environmental regulation in neighboring states, treating neighboring regulations as endogenous. Use the average value of the other (non-environmental) neighboring state characteristics as instruments. Now, what is the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation?
+environmental regulation in your preferred model?
+```{r}
+# IV Regression
+formula1 <- index ~ d78 + d79 + d80 + d81 + d82 + d83 + d84 + d85 + d86 + d88 + d89 + d90 + d91 + d92 + d93 + d94 + pc + pcc + pop + popd + urb + bindex + bpc + bpcc + bpop + bpopd + burb
+inst1 <- ~ bpc + bpcc + bpop + bpopd + burb
+fit_iv1 <- ivreg(formula1, inst = inst1, data = jue_panel)
 
+# Display the results
+summary(fit_iv1)
+```
 
 # Problem 11
 Finally, re-do the model in question 10, but add state dummies to the model as well. What is
 the impact of an increase in environmental stringency in neighboring state's on a state's own level of environmental regulation? What do you conclude about the importance of controlling for state effects even in the two-stage least squares model?
+```{r}
+# IV Regression with state dummies
+formula2 <- index ~ I(sid) + d78 + d79 + d80 + d81 + d82 + d83 + d84 + d85 + d86 + d88 + d89 + d90 + d91 + d92 + d93 + d94 + pc + pcc + pop + popd + urb + bindex + bpc + bpcc + bpop + bpopd + burb
+inst2 <- ~ bpc + bpcc + bpop + bpopd + burb
+fit_iv2 <- ivreg(formula2, inst = inst2, data = jue_panel)
 
+# Display the results
+summary(fit_iv2)
+```
 
 
 
