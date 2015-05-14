@@ -140,29 +140,29 @@ Generate a dummy variable, obese, equal to one if BMI > 30 and zero otherwise. R
 sbp_data$obese <- ifelse(sbp_data$bmi > 30, 1, 0)
 
 # Create a panel data frame
-sbp_panel <- plm.data(sbp_data, indexes = c("t", "childid"))
+sbp_panel2 <- plm.data(sbp_data, indexes = c("t", "childid"))
 
 # Re-estimate a cross-section estimator for all children in period two only
 # With all the regressors
-data2 <- filter(sbp_panel, t == 2)
-sbp_lm3 <- lm(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = (data2))
+data2 <- filter(sbp_panel2, t == 2)
+sbp_lm3 <- lm(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = (data2))
 
 # Display the resullts
 stargazer(sbp_lm3, type = "text", title = "Cross-section Estimators: Robust Standard Errors")
 
 # Estimate a time series type estimator
 # With all the regressors
-sbp_ts2 <- lm(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel)
+sbp_ts2 <- lm(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel)
 
 # Display the resullts
-stargazer(sbp_ts2, type = "text", title = "Time Series Estimators: All Regressors")
+stargazer(sbp_ts2, type = "text", title = "Time Series Estimators: Robust Standard Errors")
 
 # Estimate a difference-in-difference estimator
 # With all the regressors
-sbp_did2 <- wfe(bmi ~ as.factor(treat) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel, treat = "treat", time.index = "t", estimator = "did", unit.index = "childid")
+sbp_did2 <- wfe(bmi ~ as.factor(treat) + as.factor(obese) + RACEm1 + RACEm2 + RACEm3 + RACEm4 + birthweight + urb1 + urb2 + reg1 + reg2 + reg3 + inc + inc2, data = sbp_panel, treat = "treat", time.index = "t", estimator = "did", unit.index = "childid")
 
 # Display the resullts
-stargazer(sbp_did2, type = "text", title = "Difference-in-Difference Estimators: All Regressors")
+stargazer(sbp_did2, type = "text", title = "Difference-in-Difference Estimators: Robust Standard Errors")
 
 ```
 
